@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Splash's server guide</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h1>Hi, welcome to my home server guide.</h1>
+
+
+  <h2>Intro</h2>
+    <p>This guide is an in depth guide on a bare metal installation for a home server. This guide covers hosting a Minecraft server, streaming Jellyfin, backing up with Nextcloud, websites with NGINX, and more!</p>
+    <p>I've seperated the parts of the guide into sections below:
+
+    <h3>Quick Navigation</h3>
+      <li><a href="prereqs">Prerequisites</a></li>
+      <li><a href="prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+<!-- Feedback Section -->
+<section id="feedback-section" class="feedback-container">
+    <h2>Comments & Feedback</h2>
+
+    <form action="submit_comment.php" method="POST" class="comment-form">
+        <div class="form-group">
+            <label for="username">Name or Handle:</label>
+            <input type="text" id="username" name="username" required maxlength="50" placeholder="e.g. Alex">
+        </div>
+
+        <div class="form-group">
+            <label for="comment">Feedback / Questions:</label>
+            <textarea id="comment" name="comment" rows="5" required placeholder="Have a question or suggestion about the server guide?"></textarea>
+        </div>
+
+        <!-- Basic Anti-Spam Honeypot (hidden from real users) -->
+        <input type="text" name="website_hp" style="display:none !important;" tabindex="-1" autocomplete="off">
+
+        <button type="submit" class="btn-submit">Post Feedback</button>
+    </form>
+
+    <div class="comments-list">
+        <?php include 'load_comments.php'; ?>
+    </div>
+</section>
+
+<article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: August 7th, 2026</p>
+      <p>Last modified: August 26th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+
+  </body>
+</html>
+

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Splash's server guide</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h1>Hi, welcome to my home server guide.</h1>
+
+
+  <h2>Intro</h2>
+    <p>What will you use your server for? Minecraft? Storage, Media server? We'll go over all three.</p>
+
+  <nav>
+    <h3>Quick Navigation</h3>
+      <ul>
+        <li><a href="#prereqs">Prerequisites</a></li>
+        <li><a href="#os-config">Configuring the OS</a></li>
+        <li><a href="#minecraft">Minecraft Server</a></li>
+        <li><a href="#jellyfin">Jellyfin</a></li>
+        <li><a href="#nextcloud">Nextcloud</a></li>
+        <li><a href="#tailscale">Tailscale</a></li>
+        <li><a href="#port-forwarding">Port Forwarding</a></li>
+        <li><a href="#https">HTTPS Configuration</a></li>
+        <li><a href="#other-tools">Recommended Tools</a></li>
+      </ul>
+  </nav>
+
+  <h2 id="prereqs">Prerequisites</h2>
+    <p>In this guide, you'll need a couple things before starting. The most important thing is the network type. You'll need what's called a NAT or a router static IP. A CG NAT will not work. Router static IP I've had no experience with and so I cannot say much on that. To tell if you have a CG NAT, here's the steps: go to your settings on Windows. Go to network & internet, and go to your wifi you are currently connected to. Scroll down until you see something that says "IPV4 default gateway". Go to that number in the browser. Go to the bottom of your router and look for a section that says "user/password". The user is usually "admin" while the password is a string of letters. You'll also see an IP address number on the bottom, from my experience that is unreliable. Input that in the login screen in the browser. It'll probably prompt you for a ton of questions like setting a different password. Do that if you'd like. Every router is different. Once you get past the questions, look for a tab that says "status". Look for the "public IPV4 address". Note that IP down somewhere. Then go to <a href="https://whatsmyip.com" target="_blank">whatsmyip.com</a> and make sure the IP shown on whatsmyip.com is the same as what's shown in your router. If it is the same, you're good to go and you either have a NAT or a static IP. If it's different, your network is a CG NAT and you'll need to see if you can get it to a NAT or static IP. Call your ISP (internet service provider) and ask them if you can get to a NAT or static IP. Usually, it's going to cost extra for the static IP. Both ISPs I've dealt with have it as an extra $10 a month. I should explain the difference between a NAT and CG NAT. A CG NAT means you do not have a public IP address. You and many other households share that IP without even knowing it. Companies do this as a way to save numbers. I think it's a load of bull, but ok. So if you have one and don't want to pay the extra $10 on your internet bill, what does this mean for your server? It basically means your server will not be public. We'll get into it later, but Tailscale is a great software, and even if you have a NAT, but you are the only one who will use your server, I'd just use Tailscale. If you still don't want to pay the $10 and still want it public, do what I do: ask someone if you can host at their house who's networking company is behind a NAT and not a CG NAT. Or you could look into a VPS or Cloudflare tunnels. Cloudflare tunnels seem easy to setup, I should try for educational purposes. A NAT means you have a public IP specific to your house. And a static IP on your router means that it does not change its IP. But I've heard conflicting reports on a static IP, I think with a static IP you don't have the LAN IP starting with <code>192.168</code> (we'll get into that later). You would also need a static IP to have multiple IP addresses on your network. Once again, I've never had experience with a static IP. One day though...</p>
+    <p>Now for the machine. What will your server run on? My server is an HP Compaq 8200 Elite SFF that cost me $40 and then I got spare parts from friends. But it could be a laptop, an actual server, or a Raspberry Pi. Whatever it is, it will work.</p>
+    <p>Configuring HTTPS requires a domain name and I'd recommend <a href="https://cloudflare.com" target="_blank">Cloudflare</a> for one. dot com domains are usually $10.46 a year. If you do not intend to setup HTTPS, don't worry about that.</p>
+    <p>Do not use your server over WiFi, you are expecting to have issues. Get an ethernet cord and use that. Make the server close to the router or get a super long ethernet cord to have it farther away.</p>
+    <p>Before starting, hook up a monitor, go into the BIOS of your server device by hitting F2, F11, or delete on your keyboard on startup. Look for power settings and look for a setting labeled "after power off". Change it to "power on" or whatever it'll say. This makes it that if your server loses power, it will turn back on as soon as the power comes back on. It's not necessary and I don't know if laptops have it, but it's very useful. My server is hosted at my grandma's and when the power goes out and comes back on, I nor her have to touch it.</p>
+
+  <h2 id="os-config">Configuring the OS</h2>
+    <p>The operating system is how your server works and interacts with the world. With so many ones to choose, what will you pick? Anything but Windows. Any Linux Distro is better than Windows. Many to pick, but I'd recommend <a href="https://debian.org" target="_blank">Debian</a>. Make the USB bootable via <a href="https://rufus.ie" target="_blank">Rufus</a> or <a href="https://ventoy.net" target="_blank">Ventoy</a> (Rufus is easier btw) of your preferred choice and insert the USB into the DIY home server, laptop, actual server, whatever it is. Instead of hitting "graphical install", scroll to where it says "install". Follow the steps, input a root password, create a username and password, then when you get to the network configuration page, select your ethernet. But make sure to hit cancel once everything starts. Then it should say it failed to configure network. Click continue, and select "enter manually". The server's IP should be what you pick, but it has to match your gateway for the first three parts. Example: my gateway is <code>192.168.150.1</code> so my IP must contain the <code>192.168.150</code> part. But it doesn't need to start with 1 for the final part. My server is <code>192.168.150.237</code> for reference. Before deciding on your IP, log into your router to check if anything on your network uses that IP. Unlikely, but still look. Once you continue, it'll ask for a subnet. should default to <code>255.255.255.0</code> so no need to change that. Continue, gateway should import from your main IP but if not, put that in. The nameservers can stay the gateway, but I personally change it to <code>8.8.8.8 8.8.4.4</code>. Continue until you get to the install until you get to the softare selection screen. Uncheck the following using the space bar: graphical interface, GNOME desktop environment. Then select "ssh server" and click continue. Follow the rest of the install steps until it is finished.</p>
+    <p>Once installed, login via root or your user, and type "ip a". Look for something that says "192.168" followed by the next number of your gateway and a unique number at the end that isn't 255. Example: my server is 192.168.150.237. Now you can unplug the monitor and keyboard and the rest can be done on your computer.</p>
+    <p>Go to your desktop device and go to the taskbar and search "CMD". Click on it and you'll see a terminal. type <code>ssh YOURUSERNAME@192.168.xxx.xxx</code> for whatever the LAN IP is. Remember the root password? Currently your user cannot do much and so you need to go into root. To do that, type <code>su -</code> and input the root password. Once in, you have a few things to install. This command should do it all for you: <code>apt install sudo -y && apt install curl -y && sudo apt update && sudo apt upgrade -y</code>. When we get to other software in this guide, there will be more to install but we'll get there later. You also want to make sure your server will not go into sleep. The command for that is <code>sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target</code>. You can do the same by editing the config, but this is quicker and easier. If your server is also a laptop, you will want to make it that it won't go to sleep when the lid is shut. Run <code>sudo nano /etc/systemd/logind.conf</code> and look for the lines that say <code>#HandleLidSwitch=suspend</code> and <code>#HandleLidSwitchExternalPower=suspend</code>. Change them to <code>HandleLidSwitch=ignore</code> and <code>HandleLidSwitchExternalPower=ignore</code>. ctrl + o to save and ctrl + x to exit. Then run <code>sudo systemctl restart systemd-logind</code>.</p>
+    <p>One more thing to do is the user you created doesn't have sudo permissions. To do that, when you are in root, type <code>sudo usermod -aG sudo YOUR_USERNAME</code>. To make it easier with root login as well as SFTP transfer, run the command <code>sudo nano /etc/ssh/sshd_config</code> and look for the line that says <code>PermitRootLogin</code>. It'll either say no or have a # in front of it. Remove the # and make sure it now says <code>PermitRootLogin yes</code> instead of <code>#PermitRootLogin yes</code>. Then restart SSH by running <code>sudo systemctl restart ssh</code>. You will disconnect and wait a few seconds before you login again in via <code>ssh root@192.168.xxx.xxx</code> and enter the root password. It is a little risky to permit root login, but as long as you don't port forward port 22, you should be fine. The main reason is for SFTP. When we get to Jellyfin, we'll get to that. If you login via the username, you will need to use the command <code>chmod 777 /path/to/directory</code> to do anything in SFTP for each directory. It gets annoying.</p>
+
+  <h2 id="minecraft">Minecraft server</h2>
+    <p>Now that we got all the OS config out of the way, let's host a Minecraft server. Any Java server requires Java so let's install that first. <code>sudo apt install default-jdk -y</code>. Now for the server software. I use <a href="https://cubecoders.com/AMP" target="_blank">AMP by Cubecoders</a> and I do not reccomend doing the same. It's a great software, it's just there are free versions and I bought it without thinking through. You could use the <a href="https://www.minecraft.net/en-us/download/server" target="_blank">official server jar file from Microsoft</a>, but that is so bare bones its a pain to work with, I do not reccomend. It's you gotta use GNU Screen or something like it, or learn Linux system commands, and I couldn't get some mods to install properly for some reason. Also, it's a pain if you're trying to run an older version of Minecraft because installing an older Java version on modern Debian, I couldn't figure it out. I would reccomend <a href="https://playit.gg" target="_blank">Playit.gg</a>. I've tried it once to see but the setup is easy. Bypasses the need for port forwarding by using playit.gg's servers as a tunnel to your own. It's going to be a couple commands so be prepared. First is <code>curl -SsL https://packages.playit.gg/keys/playit.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/playit.gpg >/dev/null</code> followed by <code>sudo chmod 0644 /usr/share/keyrings/playit.gpg</code> then <code>echo "deb [signed-by=/usr/share/keyrings/playit.gpg] https://playit.gg debian/" | sudo tee /etc/apt/sources.list.d/playit.list</code> almost there <code>sudo apt update</code> and finally <code>sudo apt install playit</code>. It's installed, but you need to start it. To start, use <code>sudo systemctl start playit</code> followed by <code>sudo systemctl enable playit</code> and last but not least <code>playit setup</code>. You should see a link on screen and just follow the setup from there.</p>
+
+  <h2 id="jellyfin">Jellyfin</h2>
+    <p>The thing I and everyone who uses my server uses the most is <a href="https://jellyfin.org" target="_blank">Jellyfin</a>. It's the best free way to get movies and TV shows on your server to stream them wherever. Other options like <a href="https://emby.media" target="_blank">Emby</a> and <a href="https://www.plex.tv/media-server-downloads/" target="_blank">Plex</a> cost money and I do not reccomend investing in. Don't get me started on Plex. Anyway... to install Jellyfin, use <code>curl -s https://repo.jellyfin.org/install-debuntu.sh | sudo bash</code>. It'll run you through the install script and then it will tell you to go to your browser. Go to your browser and type <code>192.168.xxx.xxx:8096</code> obviously the Xs being whatever the LAN IP is. Follow the setup instructions, and when you get to the media library part, you don't have to set it up now, but you might as well. For now, create a folder for your movies and tv shows. Do it somewhere like <code>/media</code> or <code>/mnt</code>. I always do <code>/mnt</code> out of habit when I used a <a href="https://proxmox.com" target="_blank">Proxmox</a> container. Anwyay, lets do <code>/media</code>. The command for that is <code>mkdir</code>. I'd do it like this: <code>mkdir /media/jellyfin</code>. Then create the respective folders <code>mkdir /media/jellyfin/movies</code> and <code>mkdir /media/jellyfin/tv-shows</code>. Once done, go back to the media creation part of the browser and create the media folders as labeled. And all you need to do now is put your media on your server. You do that with what's called SFTP. I use <a href="https://winscp.net" target="_blank">WinSCP</a> on Windows for that. Download it, open it, click <code>new site</code>, then input the LAN IP in the host spot and <code>root</code> for the username and the root password in the password. Once in, go to the folder for your library. When putting ripped movies or tv shows into Jellyfin, they can take a plain ISO file, but I wouldn't reccomend that. You can extract the ISO to a folder, but don't do that either. Instead use <a href="https://handbrake.fr" target="_blank">Handbrake</a> to split and compress the ISO you obtained to either an mp4 or mkv. Jellyfin works better with mkv so I'd recommend that. Just also make sure you select to bring over subtitles too. All you need to do now is drag and drop that mkv file in WinSCP to the respective folder. Once transferred, go to the jellyfin browser again and go to the dashboard. Click the scan all libraries button and once done your movie is able to be watched.</p>
+    <p>This isn't required, but I recommend installing some plugins. For TV shows, you are going to want a plugin for tv shows called the <a href="https://github.com/intro-skipper/intro-skipper" target="_blank">skip intro plugin</a>. Go back to the dashboard and go to the plugins tab. Click add repository. The name doesn't really matter, just call it "skip intro". The URL will need to be <code>https://intro-skipper.org/manifest.json</code>. Add the repository, go back to the main dashboard, click restart. Jellyfin will restart and once it does, to back to that plugins tab and go to the available tab. You should see the skip intro plugin there. Click on it, click install, and restart Jellyfin once more. Now when you watch a show, the intro comes up and you'll be able to skip it. Just know it may not work for some TV shows as it works by analyzing the audio in each episode to compare where it's the same. So if you have a show with slightly different intros, the button will not show up properly or at all. You can change the config for it in the plugins tab though. Jellyfin does not allow you to select between specific resolutions, just bitrate. The closest you can get to that is the Merge Versions plugin. You have multiple versions of the same movie on your server, use this plugin to merge them. To install it, go to the plugins tab and add a new repository. Call it "merge versions" or whatever, and paste <code>https://raw.githubusercontent.com/danieladov/JellyfinPluginManifest/master/manifest.json</code> into the URL bar. Restart Jellyfin, go back to plugins, click "available", and it should be right there. Install it, restart, and go back to the plugins but this time go to "installed". Click on Merge Versions and go to settings. Scroll down and click "merge all movies" or "merge all episodes" depending on what you want to do. Once you do that, go to your movie you had two versions of, and it should be there as one. You'll also see a new option for "version". You can switch between them before you start the movie, but unfortunately not during the movie, just bitrate. Another good plugin is the Bookshelf plugin. This time, no repository needed, just go to the available tab in plugins, and it should be there to install. This just makes it you can stream e-books.</p>
+    <p>So what's left for Jellyfin now? Add users for your family in the house, put the client on your phone or tv, and watch what you put on there. But what if you want to watch it when not at home? We'll get to that later.</p>
+
+  <h2 id="nextcloud">Nextcloud</h2>
+    <p>I like <a href="https://nextcloud.com" target="_blank">Nextcloud</a>. But as someone who prefers to do bare metal installations (like this guide), its bare metal installation is difficult. It's called <a href="https://nextcloud.com/install/#community-projects" target="_blank">LAMP stacks</a> (but because I use NGINX, it's called "LEMP" stacks). I do not recommend someone do it unless they want a challenge. If you would like, just click the link and go to the "archive" section. I myself did it, but this way I'm showing is easier. Many people dislike the Ubuntu snap store, but I've found it not that bad and to be the easiest to install Nextcloud. To install it, first you need snap. The command to install snap is <code>sudo apt install snapd -y</code>. Once installed, the command for Nextcloud is <code>sudo snap install nextcloud</code>. This next step you don't have to do if you don't intend on doing HTTPS so skip it if you won't. By default Nextcloud will use port 80 and we will need to change that. To do so, the command is <code>sudo snap set nextcloud ports.http=81</code> followed by <code>sudo snap set nextcloud ports.https=444</code>. Once done, do <code>sudo snap restart nextcloud</code> (you'll need to do this regardless if you change the ports) and go to <code>192.168.xxx.xxx:81</code> your browser. Follow the setup instructions and it's good to go. Now download the app on your phone and upload your files. But just like Jellyfin, you can only do it at home. This is where the next two parts come in.</p>
+    <p>If you would like to read my guide on the LEMP stacks, click <a href="LEMP-stacks/">here.</a></p>
+
+  <h2 id="tailscale">Tailscale</h2>
+    <p><a href="https://tailscale.com" target="_blank">Tailscale</a> is the single most useful software to install on a home server. It works like playit.gg, but for your entire server. To install, run the command <code>curl -fsSL https://tailscale.com/install.sh | sh</code>. Once done, it should say to enter "tailscale up". Type <code>sudo tailscale up --accept-dns=false</code>. The only part needed is the "sudo tailscale up" but the DNS part is because its DNS can conflict with the set DNS. Once the command is run, it will give you a link. copy it and go to your browser. It will make you login or create an account if this is your first time. If its your first time, you will be prompted to add a second device. Add the computer you've been doing this on to start. Follow its steps for your computer by downloading it and finishing the steps. Once you get to the dashboard, you're all set. You should see the name of your Debian server and your PC followed by an IP starting with 100. This one is actually useful. The IP with your Debian machine, is a private IP that only you can use. You can now access anything on your server via that IP even if you're not at home. The catch is that Tailscale is a mesh VPN. And the P in VPN stands for Private. Only the devices you connect can access your server via that IP. It's great if you're the only one using your server, but bad if others want to use it. You could add them to the config, but that would be a hassle and I wouldn't reccomend. Plus, you can't install Tailscale on something like a Roku. For stuff only I will use on my server like SSH and SFTP, I use Tailscale. But for stuff like Jellyfin, Nextcloud, and (for me at least) the Minecraft server, I use port forwarding.</p>
+    <p>One issue when not at home using Tailscale is accessing the router. Some routers can install Tailscale, but it's easier and better to just do a subnet. With the section about DHCP vs static, you'll see the mention of the subnet mask. I still don't understand the subnet or the mask, but the subnet with Tailscale is really cool. Run the command <code>sudo tailscale set --advertise-routes=192.168.150.0/24 --accept-dns=false --snat-subnet-routes=false</code>. Once run, go to the Tailscale admin console and click the three dots on your Debian server. Check off the <code>192.168.xxx.0/24</code> and click save. Now when you're not at home, you should still be able to access LAN. I use this to port forward when not at home as the old way I did it was a graphical virtual machine on Proxmox that I would turn on when I needed to access the router. It was slow and hard to read so this is much better.</p>
+
+  <h2 id="port-forwarding">Port Forwarding</h2>
+    <p>A lot of people say port forwarding is dangerous, and it can be, but you just have to be careful. As long as port 22 stays closed, it should be fine. In order to do so, you need to go back to your router login from the first part of this guide. Every router is different. For mine, look for a tab that says firewall, then look under it for a tab that says security, then look for a tab that says port forwarding. Click new, and it will ask for a device or IP address. Just do the IP as it's easier than searching for your server. Just like everything, it's the LAN IP for your server; the <code>192.168.xxx.xxx</code>. Then it will ask you for a port start and end. This is for if you need, you can have a range of ports open but for this, just put the same number in both. The number you put in should be whatever port you want public. for Jellyfin put 8096 and for Nextcloud put 81. It'll ask you for TCP, UDP, or TCP/UDP. Just do TCP. Most stuff does TCP anyways. The only thing I can think of off the top of my head that is UDP is Minecraft Bedrock Edition. But with Playit.gg, you won't have to worry about that. It will then prompt you for a WAN port start and end and just put 8096 or whatever it is you want. Click apply and that's done. While we're here, also do the same steps but for ports 80 and 443. Even if you aren't doing HTTPS, I'd still recommend you open them. Once the port number is open, go back to that status page from earlier and see the public ipv4 address. Like I said, make sure it matches the IP shown at whatsmyip.com or now that the server is set up, you could also just do <code>curl -4 ifconfig.me</code>. Copy that IP, and go to the browser. Input the public IP followed by the port number. Example for Jellyfin should be <code>YOUR.PUBLIC.IP:8096</code>. Even if you are on the same network, it will only go through if all the config was set up correctly. If so, you should see the same Jellyfin as the LAN IP. Now giving your friends and family the public IP for your server is a little sketchy. If you are not going to set up HTTPS and don't really care, use a website called <a href="https://noip.com">NO-IP</a>. They provide a free host name that you can assign to your public IP. But you can only have one on your account with the free version. And with it, you need to input the host name. Before I purchased sizablesplash.com, I had mine on NO-IP as sizablesplash.servebeer.com. Just know that even with it, people can still find your IP address via that. But if you do want a more custom domain or do HTTPS, buy a domain name on Cloudflare. I pay $10.46 a year for mine. Either way, once you assign it to the IP address, all people have to do is go to whatever the host name is on NO-IP or your domain depending on what you went with followed by the port number. But having people still input the port number is a little clunky and inconvenient. That's where HTTPS comes in.</p>
+
+  <h2 id="https">HTTPS</h2>
+    <p>Most modern websites will say "https" at the beginning of its URL. What is that for? Security. It encrypts traffic and makes information like passwords secured. I honestly do not fully understand how it works, but I know how to set it up. First we need two things: <a href="https://nginx.org" >NGINX</a>, and certbot. I would've included NGINX in the install script from earlier, but it is useless unless you do HTTPS. The commands to install each are <code>sudo apt install nginx -y</code> for NGINX, and <code>sudo apt install certbot python3-certbot-nginx</code> for the version of certbot we are going to use. Once both installed, run <code>sudo nginx -t</code> to make sure it's ok. I do also want to mention again, HTTPS requires a domain name and like I said earlier, <a href="https://cloudflare.com">Cloudflare</a> Also after NGINX is installed, go to your LAN IP in the browser with no port number, and you should see <a href="nginx.html">this screen.</a> The directory for that is <code>/var/www/html</code> but that does not need to be touched unless you do a website like this site you're reading this on. At the end of this section, I'll show you how to set that up.</p>
+    <p>Before we create the configuration, make sure you do a couple things. Make sure ports 80 and 443 are forwarded to your server's LAN IP. Then, go to your domain on Cloudflare, go to DNS, go to records, and click "add record". For the type, make sure it says <code>A</code>. When it asks for a name, do one with the <code>@</code> for root. Input the IPV4 address (the IP in your router/whatsmyip.com), and an option to click proxy. All that does is hide your IP address. It only works with web traffic on 80 and 443, so a port number opened or a minecraft server will not work. For HTTPS and me showing how to setup playit.gg earlier, that's not an issue. The click save. Create another record but instead of root, put <code>www</code> and the other same steps. Those aren't necessary, but like I said, I'd leave them for future use. Use a subdomain for your software you're setting up NGINX for is my reccomendation. Follow the same steps as before for creating a record, but then for the name, put what it's for (ex: Jellyfin). Now, you're good to go for the next step.</p>
+    <p>To create a configuration, what is this for? Sometimes configurations are different, and not all the same. A config for one thing might not work with another. I've tested the same config for Jellyfin and code server and it works fine. Nextcloud snap I'll try eventually and make a guide for that too if it requires a different config. Every config though has to start at <code>/etc/nginx/sites-available</code>. To create the config file, run <code>nano /etc/nginx/sites-available/EXAMPLE</code>. The name where the "EXAMPLE" is does not matter to the config, I'd just recommend you name it what its for (ex: /etc/nginx/sites-available/jellyfin). You should see it say "new file". Paste the config from here: <pre>
+server {
+    server_name EXAMPLE.DOMAIN.COM;
+
+    location / {
+        proxy_pass http://127.0.0.1:PORT_NUMBER_HERE;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Protocol $scheme;
+        proxy_set_header X-Forwarded-Host $http_host;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+}
+</pre> But replace the PORT_NUMBER_HERE with the port number you will be using (ex Jellyfin: <code>proxy_pass http://127.0.0.1:8096;</code>) and the EXAMPLE.DOMAIN.COM with your domain name. Then press ctrl + o + enter to save, and ctrl + x to exit. Then run <code>sudo ln -s /etc/nginx/sites-available/EXAMPLE /etc/nginx/sites-enabled/</code> to link the file in the two directories. Run <code>sudo systemctl reload nginx</code> and <code>sudo nginx -t</code> to make sure it was successful. Finally, run <code>sudo certbot --nginx -d example.domain.com</code> replacing the example, of course, and you should be able to head to your domain name and you'll see the software you set it to with a padlock by the URL. If you go back to the file <code>/etc/nginx/sites-available</code> the config should now look like this:<pre>
+
+server {
+    server_name EXAMPLE.DOMAIN.COM;
+
+    location / {
+        proxy_pass http://127.0.0.1:PORT_NUMBER_HERE;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Protocol $scheme;
+        proxy_set_header X-Forwarded-Host $http_host;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/EXAMPLE.DOMAIN.COM/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/EXAMPLE.DOMAIN.COM/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+                                              #from here
+server {
+    if ($host = EXAMPLE.DOMAIN.COM) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name EXAMPLE.DOMAIN.COM;
+    return 404; # managed by Certbot
+}                                             #to here
+</pre>I ran another config seperately with different steps and the bottom server config didn't generate. All that happens is that the domain will not direct to the proper location and will not go over HTTPS. Don't worry, it's easy to fix. If that happens to you, just paste the bottom server config from the <code>#from here</code> to <code>#to here</code> in your config and add your domain name. Reload and test NGINX and it should work again. Now, if you go to the domain name and it has HTTPS but in red letters, that's most likely an issue with your browser. Go to the same domain in an incognito tab and you should see the chain indicating HTTPS.</p>
+<p>Let's say you want to create an HTML site in <code>/var/www/html</code> and want your main domain to be that site. To create the site, run <code>nano /var/www/html/index.html</code> and write the code. The file has to be called <code>index.html</code> for it to be the home page for anything. Anyway... to make it HTTPS, edit the default config by <code>nano /etc/nginx/sites-available/default</code> and scroll passed all the lines with a <code>#</code> in them. I should mention, any line starting with a <code>#</code> is notes. It tells the software to ignore it. Scroll until you get to where it says <code>server_name _;</code> and change it. Make it say <code> server_name YOUR_DOMAIN.COM www.YOURDOMAIN.COM;</code> and save and exit. Run <code>sudo systemctl reload nginx</code> and <code>sudo nginx -t</code> to make sure it's working. Then run <code>sudo certbot --nginx -d YOURDOMAIN.com www.YOURDOMAIN.com</code> and you're good to go.</p> 
+
+
+  <h2 id="other-tools">Other things I recommend installing</h2>
+    <h3>LM Sensors</h3>
+      <p>This allows you to monitor temperatures of your CPU. To install type <code>sudo apt install lm-sensors -y</code> followed by <code>sudo sensors detect</code>. Once done, you should just be able to type <code>sensors</code> in the terminal and see the temp. This unfortunately will not work in a virtual machine on something like Proxmox.</p>
+    <h3>Pi Hole</h3>
+      <p>I'm not going to get into Pi Hole much here. It's a built-in network ad blocker. However it won't work with YouTube ads and that's why I haven't given it much chance. If you would like to experiment, you need to open firewall ports. First allow ports on your server's firewall. <code>sudo ufw allow 53/tcp</code>, <code>sudo ufw allow 53/udp</code>, and <code>sudo ufw allow 80/tcp</code>. To install Pi Hole, the command is <code>curl -sSL https://install.pi-hole.net | bash</code>. I'd honestly recommend doing Pi Hole on a separate machine like a raspberry pi or a virtual machine if like me you use Proxmox. If you're new to servers, I'd wait on Proxmox. I use it with a Debian VM but it's not a good starting server OS. If you have to use it on the same machine, change the port to something else. I did port 82. To do so, run <code>sudo nano /etc/pihole/pihole.toml</code>. Look for the line with the port number. Change it to what you want and hit ctrl + O to save, then ctrl + x to exit. Then run <code>sudo systemctl restart pihole-FTL</code> to restart it.</p>
+    <h3>Lsyncd</h3>
+      <p>Lsyncd is a great way to automatically copy folders from one spot to another. I configured it to copy Nextcloud's data from its parent directory to a directory on a second drive I put in my server. I won't really care if the main drive in my server fails and I lose everything as I don't have much worth anything on here, but the Nextcloud is something I wouldn't want to lose. I don't have much importance on there currently but I uploaded all the photos from my phone to it. To install it, run <code>sudo apt install lsyncd -y</code>. Then create a config file with <code>mkdir -p /etc/lsyncd</code> then run <code>sudo nano /etc/lsyncd/lsyncd.config.lua</code> to create a config file. Paste the config from <a href="lsyncd.txt">my config's copy</a> but replace the <code>/SOURCE/FOR/THE/FILES</code> and <code>/TARGET/FOR/THE/FILES</code> with your real directories. Eventually I'll add to this guide a part on setting up another drive.</p>
+    <h3>Honorable Mentions</h3>
+      <p><a href="https://docker.com" target="_blank">Docker</a> is a very popular software I have never tried it because there were people I used to talk to who would dictate what I would do with servers. They HATED Docker. I might try it now because I no longer associate with them. Because I've never used Docker, I have nothing to say in this guide on it. All I have to say is that you might want to try it over a bare metal installation like this guide.</p>
+      <p>NGINX is a web server, so you can create your own website. You just need to learn html. It's easy. I took some reference code and reverse engineered my own. you can do so with mine as well. <a href="/" download>Take the home page.</a></p>
+<!--
+    <h3>Background processes</h3>
+      <p>Sometimes I'll find some code online for monitoring the temp of the CPU more thouroughly. I found one for a Discord bot. But you'd need GNU screen or a better way, making it a background process. Start by installing <code>apt update && apt install -y python3-venv python3-full</code>. Then create your folder for the code you want to run in the background <code>mkdir -p /opt/YOUR_CODE_FILE</code> but replace the "YOUR_CODE_FILE" with wht you want to call it. Then <code>cd /opt/YOUR_CODE_FILE</code>. Run <code>python3 -m venv env</code> to create an envirment.
+-->
+  <article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>    
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: August 7th, 2026</p>
+      <p>Last modified: August 20th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>This site is open source</a></p>
+    </article>
+
+  </body>
+</html>
+

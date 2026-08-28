@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <title>Sizable Splash</title>
+  
+  <!-- Google Search Snippet Tag -->
+  <meta name="description" content="Hi, I'm Trevor. I'm a computer nerd who hosts this website on my home server. You may also know me online as SizableSplash.">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <link rel="canonical" href="https://sizablesplash.com/">
+
+  <!-- Open Graph / Social Tags -->
+  <meta property="og:title" content="Sizable Splash">
+  <meta property="og:description" content="Hi, I'm Trevor. I'm a computer nerd who hosts this website on my home server. You may also know me online as SizableSplash.">
+  <meta property="og:url" content="https://sizablesplash.com/">
+
+  <link rel="icon" type="image/png" href="background.png">
+
+</head>
+  <style>
+    body {
+      <!--background:url('IMG_2092.jpg') center / cover no-repeat fixed, #2c3e50;-->
+    }  
+    body {
+      background-color: black;
+      color: white;
+      font-family: Times New Roman;
+      margin-top: 1%;
+      padding: 20px;
+    }
+    <!--img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+    }-->
+
+    /* Sets up the side-by-side screen layout */
+    .container {
+      display: flex;
+      flex-wrap: wrap;       /* Drops image below text if screen gets too small (like phones) */
+      gap: 50px;             /* Adds a clean space between text and your image */
+      align-items: flex-start; /* Keeps the image at the top of its column */
+    }
+
+    /* Controls the text layout area on the left */
+    .left-content {
+      flex: 1;               /* Lets text occupy all the remaining screen room */
+      min-width: 300px;      /* Prevents text column from squishing too narrow */
+      margin-right: 320px;   /* Crucial: Creates a blank safety buffer zone so text never crawls under your floating image */
+    }
+
+    /* Sets your image area to float dynamically on the screen */
+    .right-content {
+      position: fixed;      /* Forces the element to stay in view while scrolling */
+      top: 40px;            /* Pins it 40px away from the top edge of the browser window */
+      right: 40px;          /* Pins it 40px away from the right edge of the browser window */
+      width: 250px;         /* Increased sizing from your previous setup */
+      z-index: 100;         /* Keeps the image layered strictly on top of other content layers */
+    }
+
+    /* Forces your image to properly scale within its right-side container */
+    .right-content img {
+      width: 100%;           
+      height: auto;
+    }
+
+/* Mobile view adjustments (screens 768px wide or smaller) */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column-reverse; /* Places image above the text on small screens */
+    gap: 20px;
+  }
+
+  .left-content {
+    margin-right: 0; /* Clears the desktop margin buffer */
+    min-width: 100%;
+  }
+
+  .right-content {
+    position: static; /* Removes fixed position so it scrolls naturally */
+    width: 180px;      /* Fits better on mobile screens */
+    margin: 0 auto;    /* Centers the image horizontally */
+  }
+}
+
+  </style>
+
+  <body>
+    <!-- this is a placeholder note -->
+    <div class="container">
+
+      <div class="left-content">
+
+        <h1>Hi, I'm Trevor</h1>
+        <p>I'm a computer nerd and here's a website I setup for whatever I desire.</p>
+        <p>I'm no expert in coding at the time of me making this. I might make my own coding project and put it here.</p>
+        <p>If you desire to reach me, please do so at "t.d.bergstrom@sizablesplash.com".</p>
+
+        <h2>Everything used on this server:</h2>
+        <p>The 'server' is an HP Compaq 8200 Elite SFF sitting in my grandma's living room.</p>
+        <p>The OS is Proxmox with this section of the server on a Debian VM.</p>
+        <p>I use jellyfin for a home media server on this.</p>
+        <p>I host a Minecraft server with AMP by Cubecoders for my friends (although no one uses it much).</p>
+        <p>I host cloud storage with Nextcloud LEMP stacks (I do not reccomend, just use snap)
+        <p>This website (duh).</p>
+
+        <h2>my socials</h2>
+        <p><a href="https://youtube.com/@sizablesplash7815?si=2yC-pyRS_cJNta6I" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;">YouTube</a></p>
+        <p><a href="https://discord.gg/UZWs6rVPFT" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;">Discord server</a> and <a href="https://discord.gg/HjvadzcdzB" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;">server just for my home server</a></p>
+        <p><a href="https://pcpartpicker.com/list/nDWhDj" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;">My PC Build</a></p>
+        <p>D-Did you expect more? My personal Instagram/Facebook?</p>
+
+        <h2><a href="stardust" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;">Mystery Link</a></h2>
+
+        <h2><a href="blog" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;">Blog I'll probably forget about</a></h2>
+
+        <h2><a href="server-guide" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;">Server Guide</a></h2>
+
+        <h2></h2>
+        <article style="margin-top: 60px;">
+          <p><a href="https://www.reddit.com/r/zelda/s/1Z7Wo6EYcH" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" >Picture from this Reddit post</a></p>
+        </article>
+        <article style="margin-top: 80px;">
+          <p>Creation date: March 25th, 2026</p>
+        </article>
+        <p>Last date modified: August 18th, 2026</p>
+        <article style="margin-bottom: 60px;">
+        <!--  <p>Fun Fact: I accidentally deleted this site on July 22nd and found a backup from March.</p> -->
+        </article>
+
+        <article style="margin-bottom: 100px;">
+          <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;"download>this site is open source</a></p>
+        </article>
+
+      </div>
+
+      <div class="right-content">
+        <img src="background.png" >
+      </div>
+
+    </div>
+  </body>
+
+</html>
+
+
+<!-- notes:
+the background thing:  style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;"

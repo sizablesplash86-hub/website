@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>LEMP Stacks</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h3>LEMP Stacks</h3>
+    <p>The LEMP stacks are much more complicated to install. But, I would still like to share how to install. Two pages down and we'll get more into NGINX, but it fits better here. Let's install the prerequisites: start with updating the system <code>sudo apt update && sudo apt upgrade -y</code>. Now install some commands we'll need: <code>sudo apt install -y curl wget unzip gnupg2 software-properties-common</code>. Then the dependencies: <code>sudo apt install nginx mariadb-server mariadb-client unzip -y</code>. NGINX should start, but just in case, run <code>sudo systemctl enable --now nginx</code>. Same with MariaDB: <code>sudo systemctl enable --now mariadb</code>. Then run <code>mysql</code> and you should see a screen saying similar to this: <pre>
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 9
+Server version: 11.8.6-MariaDB-0+deb13u1 from Debian -- Please help get to 10k stars at https://github.com/MariaDB/Server
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]>
+</pre> Type, not paste then edit as it can accidentally send it, <code>CREATE DATABASE nextcloud DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;</code> and then <code>CREATE USER 'nextclouduser'@'localhost' IDENTIFIED BY 'your_strong_password';</code> but replace the "your_strong_password" with your actual password. First time I encountered an error. I don't know if you will, but if you do, run <code>FLUSH PRIVILEGES;</code> and redo the previous command. Then <code>GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextclouduser'@'localhost';</code> Then <code>FLUSH PRIVILEGES;</code> Followed by <code>EXIT;</code>. Run <code>cd /tmp && wget https://download.nextcloud.com/server/releases/latest.zip</code>. As updates come out, I don't know if that link will still work. If not, go to <a href="https://nextcloud.com/install/#community-projects">here</a> and copy the download link for the archive and use that link instead. Run <code>unzip latest.zip -d /var/www/</code>. Then run <code>sudo chown -R www-data:www-data /var/www/nextcloud/</code> and <code>sudo chmod -R 755 /var/www/nextcloud/</code>. It's now installed, but not accessible. Normally, it'll run on a domain name. But I'll show you how to do without first. To get that, run <code>nano /etc/nginx/sites-available/nextcloud</code> and paste the GIANT config from this with some tweaks:<pre>
+# Nextcloud nginx configuration â€” root installation
+
+# PHP-FPM backend.
+upstream php-handler {
+    # Use one of the options below, not both:
+    #server 127.0.0.1:9000;
+    server unix:/run/php/php8.4-fpm.sock;                         #replace with your PHP version
+}
+
+# Set the `immutable` cache control options only for assets with a cache busting `v` argument
+map $arg_v $asset_immutable {
+    "" "";
+    default ", immutable";
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name _;                      
+
+    # Prevent nginx HTTP Server Detection
+    server_tokens off;
+
+    # Enforce HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+#    listen 443      ssl;
+#    listen [::]:443 ssl;
+    http2 on;
+
+    listen 9000;
+
+    server_name _;                      
+
+    # Path to the root of your installation
+    root /var/www/nextcloud;
+
+    # Use Mozilla's guidelines for SSL/TLS settings
+    # https://mozilla.github.io/server-side-tls/ssl-config-generator/
+
+    # Prevent nginx HTTP Server Detection
+    server_tokens off;
+
+    # HSTS settings
+    # WARNING: Only add the preload option once you read about
+    # the consequences in https://hstspreload.org/. This option
+    # will add the domain to a hardcoded list that is shipped
+    # in all major browsers and getting removed from this list
+    # could take several months.
+    add_header Strict-Transport-Security "max-age=15768000; includeSubDomains" always;
+
+    # set max upload size and increase upload timeout:
+    client_max_body_size 512M;
+    client_body_timeout 300s;
+    fastcgi_buffers 64 4K;
+
+    # Proxy and client response timeouts
+    # Uncomment an increase these if facing timeout errors during large file uploads
+    #keepalive_timeout 60s;
+    #proxy_connect_timeout 60s;
+    #proxy_send_timeout 60s;
+    #proxy_read_timeout 60s;
+    #send_timeout 60s;
+
+    # Enable gzip but do not remove ETag headers
+    gzip on;
+    gzip_vary on;
+    gzip_comp_level 4;
+    gzip_min_length 256;
+    gzip_proxied expired no-cache no-store private no_last_modified no_etag auth;
+    gzip_types application/atom+xml text/javascript application/javascript application/json application/ld+json application/manifest+json application/rss+xml application/vnd.geo+json application/vnd.ms-fontobject application/wasm application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/bmp image/svg+xml image/x-icon text/cache-manifest text/css text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy;
+
+    # Pagespeed is not supported by Nextcloud, so if your server is built
+    # with the `ngx_pagespeed` module, uncomment this line to disable it.
+    #pagespeed off;
+
+    # The settings allows you to optimize the HTTP2 bandwidth.
+    # See https://blog.cloudflare.com/delivering-http-2-upload-speed-improvements/
+    # for tuning hints
+    client_body_buffer_size 512k;
+
+    # HTTP response headers borrowed from Nextcloud `.htaccess`
+    add_header Referrer-Policy                   "no-referrer"                                   always;
+    add_header X-Content-Type-Options            "nosniff"                                       always;
+    add_header X-Frame-Options                   "SAMEORIGIN"                                    always;
+    add_header X-Permitted-Cross-Domain-Policies "none"                                          always;
+    add_header X-Robots-Tag                      "noindex, nofollow"                             always;
+    add_header Permissions-Policy                "camera=(), microphone=(), geolocation=()"      always;
+    add_header Content-Security-Policy           "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'self'" always;
+
+    # Remove X-Powered-By, which is an information leak
+    fastcgi_hide_header X-Powered-By;
+
+    # Set .mjs and .wasm MIME types
+    # Either include it in the default mime.types list
+    # and include that list explicitly or add the file extension
+    # only for Nextcloud like below:
+    include mime.types;
+    types {
+        text/javascript  mjs;
+        application/wasm wasm;
+    }
+
+    # Specify how to handle directories -- specifying `/index.php$request_uri`
+    # here as the fallback means that Nginx always exhibits the desired behaviour
+    # when a client requests a path that corresponds to a directory that exists
+    # on the server. In particular, if that directory contains an index.php file,
+    # that file is correctly served; if it doesn't, then the request is passed to
+    # the front-end controller. This consistent behaviour means that we don't need
+    # to specify custom rules for certain paths (e.g. images and other assets,
+    # `/updater`, `/ocs-provider`), and thus
+    # `try_files $uri $uri/ /index.php$request_uri`
+    # always provides the desired behaviour.
+    index index.php index.html /index.php$request_uri;
+
+    # Rule borrowed from `.htaccess` to handle Microslop DAV clients
+    location = / {
+        if ( $http_user_agent ~ ^DavClnt ) {
+            return 302 /remote.php/webdav/$is_args$args;
+        }
+    }
+
+    location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+
+    # Make a regex exception for `/.well-known` so that clients can still
+    # access it despite the existence of the regex rule
+    # `location ~ /(\.|autotest|...)` which would otherwise handle requests
+    # for `/.well-known`.
+    location ^~ /.well-known {
+        # The rules in this block are an adaptation of the rules
+        # in `.htaccess` that concern `/.well-known`.
+
+        location = /.well-known/carddav { return 301 /remote.php/dav/; }
+        location = /.well-known/caldav  { return 301 /remote.php/dav/; }
+
+        location /.well-known/acme-challenge    { try_files $uri $uri/ =404; }
+        location /.well-known/pki-validation    { try_files $uri $uri/ =404; }
+
+        # Let Nextcloud's API for `/.well-known` URIs handle all other
+        # requests by passing them to the front-end controller.
+        return 301 /index.php$request_uri;
+    }
+
+    # Rules borrowed from `.htaccess` to hide certain paths from clients
+    location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)(?:$|/)  { return 404; }
+    location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console)                { return 404; }
+
+    # Hide metadata files which would otherwise be served as plain files and
+    # leak dependency information (composer.json, package.json, core/shipped.json).
+    location ~ ^/(?:composer\.(?:json|lock)|package(?:-lock)?\.json|core/shipped\.json)$ { return 404; }
+
+    # Pass PHP requests to PHP-FPM.
+    #
+    # Important: this block must appear above the static asset locations
+    # below. Those locations fall back to `/index.php$request_uri`; if
+    # they appear first, nginx can repeatedly rewrite to `/index.php`,
+    # causing an internal redirection loop.
+    location ~ \.php(?:$|/) {
+        # Rewrite most PHP requests to Nextcloud's front controller (`/index.php`).
+        #
+        # (Mirrors the rewrite exceptions in Nextcloud's Apache .htaccess.)
+        #
+        # Exceptions (not rewritten; must remain directly reachable):
+        #   index.php, remote.php, public.php, cron.php, status.php
+        #   ocs/v1.php, ocs/v2.php, ocs-provider/*
+        #   core/ajax/update.php, updater/*
+        #   */richdocumentscode(_arm64)?/proxy
+        #
+        # Other exceptions (e.g. /.well-known) are handled by dedicated
+        # location blocks elsewhere in this config.
+        #
+        # Caution: small edits to this regex can break routing or introduce
+        # rewrite loops.
+        rewrite ^/(?!index|remote|public|cron|status|ocs\/v[12]|ocs-provider\/.+|core\/ajax\/update|updater\/.+|.+\/richdocumentscode(_arm64)?\/proxy) /index.php$request_uri;
+
+        # Split `/file.php/path/info` into:
+        # - $fastcgi_script_name: `/file.php`
+        # - $fastcgi_path_info:   `/path/info`
+        #
+        # This is required for entry-points such as `remote.php` and `public.php`,
+        # which route requests based on PATH_INFO.
+        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+        set $path_info $fastcgi_path_info;    # Save before try_files resets it
+
+        # Return 404 for nonexistent PHP scripts (avoids passing arbitrary
+        # paths to PHP-FPM, which is a known security risk).
+        try_files $fastcgi_script_name =404;
+
+        include fastcgi_params;
+        fastcgi_pass php-handler;
+
+        fastcgi_param SCRIPT_FILENAME            $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO                  $path_info;
+        fastcgi_param HTTPS                      on;       # Assumes TLS terminates here
+        fastcgi_param modHeadersAvailable        true;     # Avoid duplicate security headers
+        fastcgi_param front_controller_active    true;     # Enable pretty URLs
+
+        # Let nginx handle HTTP error responses from PHP-FPM (e.g. custom
+        # error pages). Disable for debugging if PHP errors are being hidden.
+        fastcgi_intercept_errors on;
+
+        # Required for uploads: PHP-FPM does not support chunked
+        # transfer encoding and needs a Content-Length header.
+        fastcgi_request_buffering on;
+
+        # Optional PHP-FPM timeout tuning (e.g. for 504 response timeouts).
+        # Increase these only if uploads or long-running PHP requests are
+        # timing out in your environment.
+        #fastcgi_read_timeout 60s;
+        #fastcgi_send_timeout 60s;
+        #fastcgi_connect_timeout 60s;
+
+        # Disable on-disk buffering of FastCGI responses (reduces disk I/O at
+        # the cost of holding responses in memory).
+        fastcgi_max_temp_file_size 0;
+    }
+
+    # Serve static files
+    location ~ \.(?:css|js|mjs|svg|gif|ico|jpg|png|webp|wasm|tflite|map|ogg|flac|mp4|webm)$ {
+        try_files $uri /index.php$request_uri;
+        # HTTP response headers borrowed from Nextcloud `.htaccess`
+        add_header Cache-Control                     "public, max-age=15778463$asset_immutable" always;
+        add_header Referrer-Policy                   "no-referrer"                              always;
+        add_header X-Content-Type-Options            "nosniff"                                  always;
+        add_header X-Frame-Options                   "SAMEORIGIN"                               always;
+        add_header X-Permitted-Cross-Domain-Policies "none"                                     always;
+        add_header X-Robots-Tag                      "noindex, nofollow"                        always;
+        access_log off;     # Optional: Don't log access to assets
+    }
+
+    location ~ \.(otf|woff2?)$ {
+        try_files $uri /index.php$request_uri;
+        expires 7d;         # Cache-Control policy borrowed from `.htaccess`
+        access_log off;     # Optional: Don't log access to assets
+    }
+
+    # Rule borrowed from `.htaccess`
+    location /remote {
+        return 301 /remote.php$request_uri;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php$request_uri;
+    }
+}
+
+</pre>Or to make it easier, run <code>cd /etc/nginx/sites-available && wget https://sizablesplash.com/server-guide/prereqs/OS-config/nextcloud/LEMP-stacks/nextcloud</code> and then edit the config from there. Save and exit. Run <code>sudo ln -s /etc/nginx/sites-available/nextcloud /etc/nginx/sites-enabled</code> then <code>sudo systemctl reload nginx && sudo nginx -t</code> to verify everything is working. Now just go to your browser and go to the LAN IP followed by the port number 9000. It doesn't have to be that, I just chose for that to be the port. Once you go there, you should see creating an administration account. Put what you want for that. Database user though must be root with that password from the mariadb configuration. And the database host should be <code>localhost:9000</code>. Now, run <code>sudo systemctl restart php8.x-fpm</code> replace the X with the version number. And <code>sudo systemctl restart nginx</code>. Finally, it's done. If you want to add HTTPS, just replace the underscore in <code>server_name _;</code> with your domain name and then run <code>sudo certbot --nginx -d your.domain.com</code>. Enjoy cloud storage.</p>
+
+<!-- created August 19th, 2026 -->
+ <article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>    
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: August 19th, 2026</p>
+      <p>Last modified: August 26th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>This site is open source</a></p>
+    </article>
+
+</body>
+</html>

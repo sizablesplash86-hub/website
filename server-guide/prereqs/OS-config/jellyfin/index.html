@@ -1,0 +1,82 @@
+\<!DOCTYPE html>
+<html>
+<head>
+<title>Jellyfin</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h1>Jellyfin</h1>
+     <p>The thing I and everyone who uses my server uses the most is <a href="https://jellyfin.org" target="_blank">Jellyfin</a>. It's the best free way to get movies and TV shows on your server to stream them wherever. Other options like <a href="https://emby.media" target="_blank">Emby</a> and <a href="https://www.plex.tv/media-server-downloads/" target="_blank">Plex</a> cost money and I do not reccomend investing in. Don't get me started on Plex. Anyway... to install Jellyfin, use <code>curl -s https://repo.jellyfin.org/install-debuntu.sh | sudo bash</code>. It'll run you through the install script and then it will tell you to go to your browser. Go to your browser and type <code>192.168.xxx.xxx:8096</code> obviously the Xs being whatever the LAN IP is. Follow the setup instructions, and when you get to the media library part, you don't have to set it up now, but you might as well. For now, create a folder for your movies and tv shows. Do it somewhere like <code>/media</code> or <code>/mnt</code>. I always do <code>/mnt</code> out of habit when I used a <a href="https://proxmox.com" target="_blank">Proxmox</a> container. Anwyay, lets do <code>/media</code>. The command for that is <code>mkdir</code>. I'd do it like this: <code>mkdir /media/jellyfin</code>. Then create the respective folders <code>mkdir /media/jellyfin/movies</code> and <code>mkdir /media/jellyfin/tv-shows</code>. Once done, go back to the media creation part of the browser and create the media folders as labeled. And all you need to do now is put your media on your server. You do that with what's called SFTP. I use <a href="https://winscp.net" target="_blank">WinSCP</a> on Windows for that. Download it, open it, click <code>new site</code>, then input the LAN IP in the host spot and <code>root</code> for the username and the root password in the password. Once in, go to the folder for your library. When putting ripped movies or tv shows into Jellyfin, they can take a plain ISO file, but I wouldn't reccomend that. You can extract the ISO to a folder, but don't do that either. Instead use <a href="https://handbrake.fr" target="_blank">Handbrake</a> to split and compress the ISO you obtained to either an mp4 or mkv. Jellyfin works better with mkv so I'd recommend that. Just also make sure you select to bring over subtitles too. All you need to do now is drag and drop that mkv file in WinSCP to the respective folder. Once transferred, go to the jellyfin browser again and go to the dashboard. Click the scan all libraries button and once done your movie is able to be watched.</p>
+    <p>This isn't required, but I recommend installing some plugins. For TV shows, you are going to want a plugin for tv shows called the <a href="https://github.com/intro-skipper/intro-skipper" target="_blank">skip intro plugin</a>. Go back to the dashboard and go to the plugins tab. Click add repository. The name doesn't really matter, just call it "skip intro". The URL will need to be <code>https://intro-skipper.org/manifest.json</code>. Add the repository, go back to the main dashboard, click restart. Jellyfin will restart and once it does, to back to that plugins tab and go to the available tab. You should see the skip intro plugin there. Click on it, click install, and restart Jellyfin once more. Now when you watch a show, the intro comes up and you'll be able to skip it. Just know it may not work for some TV shows as it works by analyzing the audio in each episode to compare where it's the same. So if you have a show with slightly different intros, the button will not show up properly or at all. You can change the config for it in the plugins tab though. Jellyfin does not allow you to select between specific resolutions, just bitrate. The closest you can get to that is the Merge Versions plugin. You have multiple versions of the same movie on your server, use this plugin to merge them. To install it, go to the plugins tab and add a new repository. Call it "merge versions" or whatever, and paste <code>https://raw.githubusercontent.com/danieladov/JellyfinPluginManifest/master/manifest.json</code> into the URL bar. Restart Jellyfin, go back to plugins, click "available", and it should be right there. Install it, restart, and go back to the plugins but this time go to "installed". Click on Merge Versions and go to settings. Scroll down and click "merge all movies" or "merge all episodes" depending on what you want to do. Once you do that, go to your movie you had two versions of, and it should be there as one. You'll also see a new option for "version". You can switch between them before you start the movie, but unfortunately not during the movie, just bitrate. Another good plugin is the Bookshelf plugin. This time, no repository needed, just go to the available tab in plugins, and it should be there to install. This just makes it you can stream e-books.</p>
+    <p>So what's left for Jellyfin now? Add users for your family in the house, put the client on your phone or tv, and watch what you put on there. But what if you want to watch it when not at home? We'll get to that later.</p>
+
+    <h3>Quick Navigation</h3>
+      <li><a href="/server-guide/prereqs">Prerequisites</a></li>
+      <li><a href="/server-guide/prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+<article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: August 7th, 2026</p>
+      <p>Last modified: August 26th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+
+  </body>
+</html>
+

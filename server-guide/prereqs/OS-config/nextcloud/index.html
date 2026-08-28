@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Nextcloud</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h1>Nextcloud</h1>
+    <p>I like <a href="https://nextcloud.com" target="_blank">Nextcloud</a>. But as someone who prefers to do bare metal installations (like this guide), its bare metal installation is difficult. It's called <a href="https://nextcloud.com/install/#community-projects" target="_blank">LAMP stacks</a> (but because I use NGINX, it's called "LEMP" stacks). I do not recommend someone do it unless they want a challenge. If you would like, just click the link and go to the "archive" section. I myself did it, but this way I'm showing is easier. Many people dislike the Ubuntu snap store, but I've found it not that bad and to be the easiest to install Nextcloud. To install it, first you need snap. The command to install snap is <code>sudo apt install snapd -y</code>. Once installed, the command for Nextcloud is <code>sudo snap install nextcloud</code>. This next step you don't have to do if you don't intend on doing HTTPS so skip it if you won't. By default Nextcloud will use port 80 and we will need to change that. To do so, the command is <code>sudo snap set nextcloud ports.http=81</code> followed by <code>sudo snap set nextcloud ports.https=444</code>. Once done, do <code>sudo snap restart nextcloud</code> (you'll need to do this regardless if you change the ports) and go to <code>192.168.xxx.xxx:81</code> your browser. Follow the setup instructions and it's good to go. Now download the app on your phone and upload your files. But just like Jellyfin, you can only do it at home. This is where the next two parts come in.</p>
+    <p>If you would like to read my guide on the LEMP stacks, click <a href="LEMP-stacks/">here.</a></p>
+
+    <h3>Quick Navigation</h3>
+      <li><a href="/server-guide/prereqs">Prerequisites</a></li>
+      <li><a href="/server-guide/prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+<article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: August 7th, 2026</p>
+      <p>Last modified: August 26th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+
+  </body>
+</html>
+

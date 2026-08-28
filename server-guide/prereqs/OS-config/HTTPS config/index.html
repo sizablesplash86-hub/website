@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTTPS Config</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h1>HTTPS Config</h1>
+        <p>Most modern websites will say "https" at the beginning of its URL. What is that for? Security. It encrypts traffic and makes information like passwords secured. I honestly do not fully understand how it works, but I know how to set it up. First we need two things: <a href="https://nginx.org" >NGINX</a>, and certbot. I would've included NGINX in the install script from earlier, but it is useless unless you do HTTPS. The commands to install each are <code>sudo apt install nginx -y</code> for NGINX, and <code>sudo apt install certbot python3-certbot-nginx</code> for the version of certbot we are going to use. Once both installed, run <code>sudo nginx -t</code> to make sure it's ok. I do also want to mention again, HTTPS requires a domain name and like I said earlier, <a href="https://cloudflare.com">Cloudflare</a> Also after NGINX is installed, go to your LAN IP in the browser with no port number, and you should see <a href="nginx.html">this screen.</a> The directory for that is <code>/var/www/html</code> but that does not need to be touched unless you do a website like this site you're reading this on. At the end of this section, I'll show you how to set that up.</p>
+    <p>Before we create the configuration, make sure you do a couple things. Make sure ports 80 and 443 are forwarded to your server's LAN IP. Then, go to your domain on Cloudflare, go to DNS, go to records, and click "add record". For the type, make sure it says <code>A</code>. When it asks for a name, do one with the <code>@</code> for root. Input the IPV4 address (the IP in your router/whatsmyip.com). You should also see an option to click proxy. All that does is hide your IP address. It only works with web traffic on 80 and 443, so a port number opened or a minecraft server will not work. For HTTPS and me showing how to setup playit.gg earlier, that's not an issue. Click the switch to grey to say "DNS ONLY" for now, and then you can flip it back on after you get past <a href="#certbot">this part</a> but for now keep it to DNS only. The click save. Create another record but instead of root, put <code>www</code> and the other same steps. Those aren't necessary, but like I said, I'd leave them for future use. Use a subdomain for your software you're setting up NGINX for is my reccomendation. Follow the same steps as before for creating a record, but then for the name, put what it's for (ex: Jellyfin). Now, you're good to go for the next step.</p>
+    <p>To create a configuration, what is this for? Sometimes configurations are different, and not all the same. A config for one thing might not work with another. I've tested the same config for Jellyfin and code server and it works fine. Nextcloud snap I'll try eventually and make a guide for that too if it requires a different config. Every config though has to start at <code>/etc/nginx/sites-available</code>. To create the config file, run <code>nano /etc/nginx/sites-available/EXAMPLE</code>. The name where the "EXAMPLE" is does not matter to the config, I'd just recommend you name it what its for (ex: /etc/nginx/sites-available/jellyfin). You should see it say "new file". Paste the config from here: <pre>
+server {
+    server_name EXAMPLE.DOMAIN.COM;
+
+    location / {
+        proxy_pass http://127.0.0.1:PORT_NUMBER_HERE;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Protocol $scheme;
+        proxy_set_header X-Forwarded-Host $http_host;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+}
+</pre> But replace the PORT_NUMBER_HERE with the port number you will be using (ex Jellyfin: <code>proxy_pass http://127.0.0.1:8096;</code>) and the EXAMPLE.DOMAIN.COM with your domain name. Then press ctrl + o + enter to save, and ctrl + x to exit. Then run <code>sudo ln -s /etc/nginx/sites-available/EXAMPLE /etc/nginx/sites-enabled/</code> to link the file in the two directories. Run <code>sudo nginx -t</code> to make sure it was successful. Finally, run <code>sudo certbot --nginx -d example.domain.com</code> replacing the example, of course. Finally run <code>sudo systemctl reload nginx</code> and you should be able to head to your domain name in the browser and you'll see the software you set it to with a padlock by the URL. If the HTTPS part is red, domain doesn't take you to where you wanted to, whatever happens, go back to your config and make sure it looks like this:<pre>
+server {
+    server_name EXAMPLE.DOMAIN.COM;
+
+    location / {
+        proxy_pass http://127.0.0.1:PORT_NUMBER_HERE;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Protocol $scheme;
+        proxy_set_header X-Forwarded-Host $http_host;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/EXAMPLE.DOMAIN.COM/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/EXAMPLE.DOMAIN.COM/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+server {
+    if ($host = EXAMPLE.DOMAIN.COM) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name EXAMPLE.DOMAIN.COM;
+    return 404; # managed by Certbot
+}
+</pre> Make sure the bottom server config and lines about the ssl certificates are generated. In some of my testing, I found the bottom server config would not generate. This config shouldn't happen to you, but later down in this page I'll talk about if it does.</p>
+
+<h4 id="certbot">Now you can turn Proxy back on in Cloudflare.</h4>
+<p>Let's say you want to create an HTML site in <code>/var/www/html</code> and want your main domain to be that site. To create the site, run <code>nano /var/www/html/index.html</code> and write the code. The file has to be called <code>index.html</code> for it to be the home page for anything. Anyway... to make it HTTPS, edit the default config by <code>nano /etc/nginx/sites-available/default</code> and scroll passed all the lines with a <code>#</code> in them. I should mention, any line starting with a <code>#</code> is notes. It tells the software to ignore it. Scroll until you get to where it says <code>server_name _;</code> and change it. Make it say <code> server_name YOUR_DOMAIN.COM www.YOURDOMAIN.COM;</code> and save and exit. Run <code>sudo systemctl reload nginx</code> and <code>sudo nginx -t</code> to make sure it's working. Then run <code>sudo certbot --nginx -d YOURDOMAIN.com www.YOURDOMAIN.com</code> and you're good to go.</p>
+<p>I also have a seperate directory called <code>/var/www/other-sites-than-main/</code> for... it's in the name. If you want to create an HTTPS link to that, it's similar to the default config and proxy. Follow the same steps as before with some changes. Still create the config file in <code>/etc/nginx/sites-available/</code> and name it what it's for. Now in the config file, paste this:<pre>
+server {
+    server_name _;
+
+    root /path/to/whatever/here/;
+    index index.html;
+
+    location / {
+        autoindex on;
+        autoindex_exact_size off;
+        autoindex_localtime on;
+        try_files $uri $uri/ =404;
+    }
+}
+</pre> Just replace the underscore with your domain name. Save & exit and then run the command from earlier <code>sudo ln -s /etc/nginx/sites-available/EXAMPLE /etc/nginx/sites-enabled/</code> just replace the example part. Run <code>sudo nginx -t</code> to check if it works. If it says successful, run <code>sudo systemctl reload nginx</code> and test again. If it fails, edit the config again to take a look. Sometimes it's an issue with the config, sometimes it's an issue with the directory. Earlier I created a config for a directory where it had some spaces in its name. If that's the case, make sure your root line looks like this: <code>root "/path/to/your/directory/with spaces/";</code> with the quotation marks. The next part is running the domain name. That's the same command from earlier too <code>sudo certbot --nginx -d example.domain.com</code> but replace the example domain. Should all work. Run <code>nano /etc/nginx/sites-available/EXAMPLE</code> to make sure that bottom config generated that I mentioned earlier that I said might not generate is there along with the lines about the SSL cert. If it's there, run <code>sudo systemctl reload nginx</code> and go to the domain in the browser and everything should work fine. I've never encountered where certbot runs successfully and the SSL lines in the config don't generate. I might create a virtual machine for following this guide and troubleshooting. If the bottom config is not there, all you would need to do is copy the bottom config from my earlier example and add your domain to the lines needed. What causes that not to generate is if you have something with the pound sign. It's for notes, but NGINX will see it and see the config as incomplete. In an earlier version of this guide, I had the example config contain a notes line about a port number and that caused conflict. Now, once you fix that and go back to the domain and you see a security risk, that's an issue with your browser. Open an incognito tab and go to the same domain and that shouldn't happen again. It's a thing with your browser's cache.</p>
+
+    <h3>Quick Navigation</h3>
+      <li><a href="/server-guide/prereqs">Prerequisites</a></li>
+      <li><a href="/server-guide/prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+<article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: August 7th, 2026</p>
+      <p>Last modified: August 27th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+
+  </body>
+</html>

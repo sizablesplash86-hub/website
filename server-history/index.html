@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Server History</title>
+
+    <style>
+      body {
+        background-color: black;
+        color: white;
+        font-family: Times New Roman;
+        margin-top: 1%;
+        text-align: left;
+        padding: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Server History</h1>
+
+      <h2>August 2025-September 2025</h2>
+        <p>Feels like yesterday I had the idea to start a DIY server. I heard from people online and from YouTubers like LTT that you could take an old PC and turn it into a server. I thought that sounded fun and began looking. I'm really good with remembering dates, but I do not remember the day I decided I wanted to make a server. I do remember however the day I bought the computer I would turn into a server. My friend just a few months earlier bought an old PC to turn into a gaming computer as a fun project. I decided to look for that same model. An HP Compaq 8200 Elite SFF. Commonly found around $40-$50 and coming with a quad core i7. I had been looking for a good deal for weeks. Until, August 30th, 2026. It was my final day at the state fair. I checked eBay on my phone and saw one for around $45. No shipping, quad core i7, model I wanted. I shot the seller an offer for $35 and they accepted. It took about a week before it arrived. By that time, it was the first week of my senior year and that was hard to adjust back. Anyway... I got a spare 2TB SSD from a friend, and I installed Windows 10 Pro... um... Windows?? Yeah. I wanted to use the software AMP by Cubecoders and so without thinking, I bought a license. That was during the time I was coming off the edge of my bad spending habits. I installed AMP, and kinda gave up from there. It wasn't until one of my other friends gave me a 2TB hard drive when I cloned the SSD over to the HDD. After that, it just sat in my mom's living room untouched for a while.</p>
+
+      <h2>October 2025-December 2025</h2>
+        <p>The same friend who gave me the hard drive came over one day with a 30ft ethernet cord so I could work on my server in my bedroom. I then got modivation to work on it again. By that time, I was daily driving CachyOS on my main PC. Everyone told me Debian was the best Distro for a server, so I wiped Windows and installed Debian. However, once again, I did a dumb thing. A graphical UI, and a weird partition scheme. But, it got me tinkering. I did everything locally with a monitor and keyboard and was trying to figure out how to make my server public. Because my networking company blocks logging into the router, that made it much harder. I had to call them for port forwarding. And I kept refusing to take advice for some dumb reason. So off and on for two months, I was trying to figure it out. Took until December 11th, 2025. And I didn't understand it was because of the public IP. Once I realized that, my server was able to be public for Minecraft. I setup a DNS with NO-IP a few weeks later.</p>
+
+      <h2>January 2026-March 2026</h2>
+        <p>By January, I learned how a server works and I was only using SFTP and SSH to control it. So I decided I would wipe the OS and install Proxmox. I heard about Proxmox and wanted to try it. January 30th, I wiped it and installed Proxmox. I then began experimenting with it. I mainly did stuff on the host and a few containers here and there. I started to setup Jellyfin with DVD rips I had. I then bought a domain name in Febuary too. March 6th is when I created an early version of my website and began learning how to setup Nginx and HTTPS. By March, I realized having everything on the host or a few containers is clunky. So I began working on a VM to do everything on. I started setting it up and realized I accidentally set the storage to 32 GB. I added more but the Jellyfin HTTPS config didn't work after that. I deleted the default config because I blindly trusted Gemini. So because I didn't know how to fix it, I decided to wipe not just the virtual machine, but the Proxmox host. I don't remember why I decided to do that, but I did. March 23rd is when I did that. I backed up everything important before. I then created the VM again and made sure to add the 2TB this time. That is how I used my server from then on. I also two days later found the code build for this website and re did it.</p>
+
+      <h2>April 2026-May 2026</h2>
+        <p>I'd wanted to install Nextcloud for a while but never got around to figuring it out because you had to restart Nextcloud after snap installed it. Easter was when I realized it when I was bored and had nothing to contribute to conversations. Another thing I did in April was setup shellinabox. When I was bored in school, I grabbed a Chromebook and logged into my server's terminal. But, everything went downhill in early May. I accidentally made a broken config for NGINX that I tried to delete. When I went to delete everything, I was doing it via the terminal and accidentally deleted a config folder and not the config file in there. Ranted online and people told me that NGINX would regenerate the config so I restarted it and it wouldn't start again. So, I didn't know what to do, and this time I reinstalled the VM and not the entire host as well. Obviously backed up the important stiff. When I reinstalled the VM and tried to reconfigure shellinabox, Gemini gave me a broken config and I gave up. I left it for a week and a half. I don't know why I bothered reinstalling shellinabox. The end of school was so close I had no reason to use it after that. A week and a half later, I was able to clear all the broken config and get it working again. Since then, it's been online functioning.</p>
+
+      <h2>June 2026-August 2026 (present)</h2>
+        <p>Not much happened in June that I can think of. I wanted to move my server to my dad's as I was moving out of my mom's, but I discovered the network type at my dad's is a CG NAT and so I asked my grandma if I could host it there; it's been there ever since. July I was running out of storage and so I took the 2TB SSD from my PC that I wasn't using and cloned my server to the SSD, wiped the HDD, then set it that Nextcloud writes its data to both drives, and that's how it's been since. AKA: a few weeks. But two days later I tried to add the integrated graphics as a GPU to the Debian VM. It crashed everything and I had to drive 40 miles to my grandma's to fix it. Not trying that again. A few weeks later, I switched Nextcloud to the LEMP stacks and reconfigured the storage. Other than that, nothing else has happened.</p>
+
+      <h2>Dates</h2>
+        <p>Date created: August 8th, 2026. Last updated: August 8th, 2026</p>
+
+  </body>
+</html>
