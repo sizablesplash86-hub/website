@@ -1,0 +1,9 @@
+git add -f "downloads/stardust/Stardust Album.zip"
+git add -f "stardust/Stardust Album.zip"
+git add .gitignore
+
+# Commit the files
+git commit -m "added zip download"
+
+# Push to GitHub
+git push
