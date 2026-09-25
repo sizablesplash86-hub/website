@@ -58,7 +58,7 @@ Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 MariaDB [(none)]>
-</pre> Type, not paste then edit as it can accidentally send it, <code>CREATE DATABASE nextcloud DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;</code> and then <code>CREATE USER 'nextclouduser'@'localhost' IDENTIFIED BY 'your_strong_password';</code> but replace the "your_strong_password" with your actual password. First time I encountered an error. I don't know if you will, but if you do, run <code>FLUSH PRIVILEGES;</code> and redo the previous command. Then <code>GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextclouduser'@'localhost';</code> Then <code>FLUSH PRIVILEGES;</code> Followed by <code>EXIT;</code>. Run <code>cd /tmp && wget https://download.nextcloud.com/server/releases/latest.zip</code>. As updates come out, I don't know if that link will still work. If not, go to <a href="https://nextcloud.com/install/#community-projects">here</a> and copy the download link for the archive and use that link instead. Run <code>unzip latest.zip -d /var/www/</code>. Then run <code>sudo chown -R www-data:www-data /var/www/nextcloud/</code> and <code>sudo chmod -R 755 /var/www/nextcloud/</code>. It's now installed, but not accessible. Normally, it'll run on a domain name. But I'll show you how to do without first. To get that, run <code>nano /etc/nginx/sites-available/nextcloud</code> and paste the GIANT config from this with some tweaks:<pre>
+</pre> Type, not paste then edit as it can accidentally send it, <code>CREATE DATABASE nextcloud DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;</code> and then <code>CREATE USER 'nextclouduser'@'localhost' IDENTIFIED BY 'your_strong_password';</code> but replace the "your_strong_password" with your actual password. First time I encountered an error. I don't know if you will, but if you do, run <code>FLUSH PRIVILEGES;</code> and redo the previous command. Then <code>GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextclouduser'@'localhost';</code> Then <code>FLUSH PRIVILEGES;</code> Followed by <code>EXIT;</code>. Run <code>cd /tmp && wget https://download.nextcloud.com/server/releases/latest.zip</code>. As updates come out, I don't know if that link will still work. If not, go to <a href="https://nextcloud.com/install/#community-projects">here</a> and copy the download link for the archive and use that link instead. Run <code>unzip latest.zip -d /var/www/</code>. Then run <code>sudo chown -R www-data:www-data /var/www/nextcloud/</code> and <code>sudo chmod -R 755 /var/www/nextcloud/</code>. It's now installed, but not accessible. Normally, it'll run on a domain name. If you want to do it automatically, my <a href="https://auto-config.sizablesplash.com">auto config</a> for NGINX does have a Nextcloud LEMP stacks preset. If you want to do it with a domain name, follow the steps currently, and I'll show you at the end how to. But I'll show you how to do without first. To get that, run <code>nano /etc/nginx/sites-available/nextcloud</code> and paste the GIANT config from this with some tweaks:<pre>
 # Nextcloud nginx configuration â€” root installation
 
 # PHP-FPM backend.
@@ -312,7 +312,7 @@ server {
 }
 
 </pre>Or to make it easier, run <code>cd /etc/nginx/sites-available && wget https://sizablesplash.com/server-guide/prereqs/OS-config/nextcloud/LEMP-stacks/nextcloud</code> and then edit the config from there. Save and exit. Run <code>sudo ln -s /etc/nginx/sites-available/nextcloud /etc/nginx/sites-enabled</code> then <code>sudo systemctl reload nginx && sudo nginx -t</code> to verify everything is working. Now just go to your browser and go to the LAN IP followed by the port number 9000. It doesn't have to be that, I just chose for that to be the port. Once you go there, you should see creating an administration account. Put what you want for that. Database user though must be root with that password from the mariadb configuration. And the database host should be <code>localhost:9000</code>. Now, run <code>sudo systemctl restart php8.x-fpm</code> replace the X with the version number. And <code>sudo systemctl restart nginx</code>. Finally, it's done.</p>
-<p>If you followed the <a href="/server-guide/prereqs/OS-config/HTTPS config">NGINX guide</a> and would like to add HTTPS, just replace the underscore in <code>server_name _;</code> with your domain name and then run <code>sudo certbot --nginx -d your.domain.com</code>.<p>
+<p>If you followed the <a href="/server-guide/prereqs/OS-config/HTTPS config">NGINX guide</a> and would like to add HTTPS, just replace the underscore in <code>server_name _;</code> with your domain name and remove the line <code>listen 9000;</code> and then run <code>sudo certbot --nginx -d your.domain.com</code>.<p>
 <p>Enjoy cloud storage.</p>
 
 <!-- created August 19th, 2026 -->
@@ -326,9 +326,11 @@ server {
       <li><a href="/server-guide/prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
       <li><a href="/server-guide/prereqs/OS-config/jellyfin">Jellyfin</a></li>
       <li><a href="/server-guide/prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud/LEMP-stacks">Nextcloud LEMP stacks</a></li>
       <li><a href="/server-guide/prereqs/OS-config/tailscale">Tailscale</a></li>
       <li><a href="/server-guide/prereqs/OS-config/port forwarding">Port Forwarding</a></li>
       <li><a href="/server-guide/prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config/spyderfly">SpyderFly</a></li>
       <li><a href="/server-guide/prereqs/OS-config/other-tools">Recommended Tools</a></li>
 
     <article style="margin-top: 75px;">
@@ -336,7 +338,7 @@ server {
     </article>    
       <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
       <p>Date created: August 19th, 2026</p>
-      <p>Last modified: August 26th, 2026</p>
+      <p>Last modified: September 2nd, 2026</p>
     <article style="margin-top: 75px; margin-bottom: 150px;">
       <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>This site is open source</a></p>
     </article>

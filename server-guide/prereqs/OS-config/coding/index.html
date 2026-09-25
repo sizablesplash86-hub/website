@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Coding</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h1>Coding</h1>
+    <p>This part is really only for if you're a super nerd. If you want to make your own stuff, follow this. If you just wanna use stuff, ignore this. You can code on any device, but I recommend programming on your server. Not to sound biased, *ahem* but Linux is best for coding. This is not intended for you to learn programming, this is a compass to point you in the direction of learning.</p>
+
+  <h2>Code Server</h2>
+    <p>So how are you going to code? You could just use GNU nano. That... works, but as someone who did that for a while, don't... I used it for coding until one day I was sitting in the dining center commons and working on some code with nano. My wifi randomly disconnected and I lost some progress. Since then, I've been using code server. It auto saves which is nice but it's also just better for coding. You could use a tool called micro, which I do recommend you still install as it's still useful <code>sudo apt install micro</code> but I say we use <a href="https://code.visualstudio.com/docs/remote/vscode-server">Code Server.</a> If you've heard of Microslop's Visual Studio Code, this is this that but on a server. To install, simply run <code>curl -fsSL https://code-server.dev/install.sh | sh</code> It'll prompt you for a few things, follow them as needed. One other thing I wanna mention is by default code server uses port 8080. A lot of things use that port and I really hate it because it just causes conflict. There are 100,000 port numbers, I don't know why software keeps using the same one. Because it can cause conflict, I just recommend you rebind the port. Do that by editing the config <code>nano ~/.config/code-server/config.yaml</code> and you should see a few things. Look for <code>bind-addr: 127.0.0.1:8080</code> and change that to whatever port you desire. You'll also need to change it to 0.0.0.0 for it to work. Mine looks like this: <code>bind-addr: 0.0.0.0:8675</code> The purpose of the 0.0.0.0 is to make it you can actually access it off your server. I think you could leave it 127.0.0.1 and do a loopback, but this is just easier. I threw this guide into Gemini and it told me to advise against this, but it's given me commands with a link that leads to a homepage numerous times (ex: curl -sSL https://sizablesplash.com | sh ) even when I've asked it to fix it and do the correct link, it still doesn't. So I wouldn't worry about it. While you're here, I recommend changing the password to something you'll remember. Save and exit, then run <code>sudo systemctl enable --now code-server@$USER</code> to start the service. Go to your LAN IP followed by the port and login via the password you changed it to. Now you're in! From here, you can create files to code. Now for coding languages...</p>
+
+  <h3>HTML</h3>
+    <p>HTML isn't considered a programming language, but it's more like one than not. HTML is pretty simple for starters. So what is HTML? HTML is the way every website works. It is a file type that can only display something without user input. Well, it can for stuff like check boxes, but lacks the ability to process that in the same way PHP or Javascript can, but those are whole different pools. So, how did I learn HTML? Frankly, I wouldn't say I know it, I just know the basics. That's why this is not a programming guide. How I started was by having Gemini code it for me and then I reverse engineered its code. If you want to do that for my site, you could either visit the <a href="https://github.com/sizablesplash86-hub/website">GitHub</a>, or download the code right <a href="index.html" download>here.</a> But this is only the code for this site, and I'd just recommend you use inspect element by pressing F12 on your keyboard.</p>
+
+  <h3>PHP</h3>
+    <p>PHP works with HTML as I mentioned in the HTML section. I don't know any PHP, and so I'm just briefly mentioning it here. You do have to install it and to do so is run <code>sudo apt install php8.5-fpm</code> to do so. My NGINX auto config actually uses a bit of PHP for the GUI, but as I mentioned, I know zero PHP so obviously the GUI doesn't work. It's actually a little outdated and Javascript is becoming more of what's used. If I ever start learning PHP, I'll get back to this.</p>
+
+  <h3>Python</h3>
+    <p>Python is the easiest programming language you can learn that's officially considered a programming language. However, I have barley given it a chance. For me, it was never much of a challenge and didn't feel rewarding enough. To install, run <code>sudo apt install python3 python3-full python3-pip -y</code> which installs the default python and a few other stuff you might use. So what is python good for? Honestly, I don't have an answer. Because of its simplicity, its only good for simple tasks. I've used it for stuff like a Discord bot with Discord.py If you desire to try that, it's installed via pip which we installed earlier and installs as <code>python3 -m pip install -U discord.py</code> So how should you learn python? I honestly don't know. I would say a book, but I'd start out with Khan Academy as that's what I did at one point.</p>
+
+  <h3>C</h3>
+    <p>Alright! Now this is what I'm excited to talk about! C is the language I'm most familiar with and I'm creating SpyderFly in. What is C? It actually has an interesting history. Created by Dennis Ritchie at AT&T's Bell Labs in the early 70s, it was created to replace the assembly coding language UNIX was written in. Yes, the guy who created C was the co creator of UNIX. You don't install C to run a program, you install its headers. To install it, run <code>sudo apt install build-essential manpages-dev -y</code> which creates headers in /usr/include/ that C and C++ uses. I'd say C is easier to learn compared to other languages, but is not nearly as simple as python. Python is middle school math, C is high school algebra, and the other languages are college calculus. So, what is C used for? It's used for operating system development and software development. Stuff like NGINX (which is what this site currently runs) was made in C. I'd love to tell you how to write C, but I am the wrong person to do that. So how should you learn it? I asked someone a while ago what book I should get and they recommended me the "bible of C programming" as it's called: <a href="https://a.co/d/0i5ZbWAa">C Programming: A Modern Approach Second Edition by: K. N. King</a>. Considerded the gold standard of C books. It's a pricy book, yes, but it's worth it. I have a copy, and I love it. It doesn't feel like a book, it feels like you're sitting in a professor's class teaching. Very well written and easy to follow. However, it's mostly focused on the "portable" C. Meaning the code in the book will work on Mac, Windows, or Linux. I ordered <a href="https://a.co/d/0idtqwz7">The Linux Programming Interface by: Michael Kerrisk</a> and that's supposed to arrive Friday and I cannot wait. If I forget to change this after September 25th, I have the book by then.</p>
+
+  <h3>C++</h3>
+    <p>"C++ is a horrible language. It's made more horrible by the fact that a lot of substandard programmers use it, to the point where it's much much easier to generate total and utter crap with it. Quite frankly, even if the choice of C were to do nothing but keep the C++ programmers out, that in itself would be a huge reason to use C." That is a famous quote from the creator of Linux Linus Torvalds. The creator of C++ Bjarne Stroustrup said "There are only two kinds of languages: the ones people complain about and the ones nobody uses." So you gotta kinda pick your poison. I've not tried C++ yet, but I'm intrigued. It just seems like a more complex C. If I'm not mistaken, with C++, you have to specify a lot more making it a pain to port to other platforms. C++ is used in a lot of stuff. A lot of software I've seen uses C++ and pretty much every video game I've seen is made with it. So how should you learn? Idk, go to college? Bjarne Stroustrup has written numerous books on C++ but some have become more outdated than others and so I have no real answer. I might buy a book, and if I had to pick, I'd get <a href="https://a.co/d/0eAbZEzH">The C++ Programming Language 4th Edition by: Bjarne Stroustrup</a> Wow! This Amazon link is more expensive than some other places, I won't be getting it off Amazon then.</p>
+
+  <h3>Rust</h3>
+    <p>Rust is a very new language made in 2015. A stable and memory efficient programming language. I don't know much Rust, in fact, I ordered the book <a href="https://a.co/d/0eo6dXXI">The Rust Programming Language Fourth Edition</a> and it's supposed to arrive tomorrow. Because it's a newer language, I can't name much stuff made with Rust. Two come to mind: <a href="https://github.com/cloudflare/pingora">Pingora</a> and <a href="https://github.com/sailbrush/rosin">Sailbrush.</a> Pingora is a web server developed by Cloudflare and Sailbrush is an open source alternative to Adobe Animate developed by YouTuber TimTom. Rust is uncommon to be taught at universities because of now new it is, but I can see it being taught within the next ten years. To install it on your Debian system, run <code>curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh</code> and just hit enter at the prompt.</p>
+
+  <h3>Java</h3>
+    <p>COFFEE!! Not that Java. I'd say the two languages I knew the names of before I got into computers were Python and Java. Java is... a language that exists. The only thing I know that's made with it is Minecraft Java Edition. I found that weird it's made in Java and so I looked it up: Notch was a self taught programmer who was most familiar with Java and so he just wrote it in what he knew best. I'm no C expert, but that's the programming language I'm most familiar with and if I were to program a game in it... that would be a choice... It's possible, but from what I know, not ideal. OpenJDK gets version releases very frequently making obsolete versions quickly. The latest is OpenJDK 27. To install it, run <code>wget https://download.java.net/java/GA/jdk27/55ce5470a6294008af0057ff4626d0e5/35/GPL/openjdk-27_linux-x64_bin.tar.gz -O /tmp/jdk.tar.gz && tar xvf jdk.tar.gz && sudo rm /tmp/jdk.tar.gz</code> hopefully this command will work, I have no clue. If it doesn't, just download it from <a href="https://jdk.java.net/27/">the JDK27 download page</a> (just click Linux) and install it with the command from the <a href="https://openjdk.org/install/">JDK install guide</a> site. For a way to learn it, I'm considering getting <a href="https://www.pearson.com/en-us/subject-catalog/p/core-java-vol-i-fundamentals-14th-edition/P200000014980/9780135558669">Core Java Volume 1 14th edition by: Cay S. Horstmann</a> for volume 1 and there is a <a href="https://www.oreilly.com/library/view/core-java-volume/9780135558775/">Volume 2</a> as well</p>
+
+  <h3>Javascript</h3>
+    <p>It took me a while before I realized that Java and Javascript were two seperate things. I'll keep this section brief as the HTML & PHP section touched on it. Javascript is what a lot of websites use for the back end with HTML at the front. It allows for more complex sites and features. To install, copy this from the node.js page:<pre>
+# Download and install nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.7/install.sh | bash
+
+# in lieu of restarting the shell
+\. "$HOME/.nvm/nvm.sh"
+
+# Download and install Node.js:
+nvm install 24
+
+# Verify the Node.js version:
+node -v # Should print "v24.21.0".
+
+# Verify npm version:
+npm -v # Should print "11.19.0".
+    </pre></p>
+
+    <h3>C#</h3>
+      <p>Remind me to do this tomorrow, I'm sick and tired right now.</p>
+
+    <!--FIX THIS SO IT HAS CODING-->
+    <h3>Quick Navigation</h3>
+      <li><a href="/server-guide/prereqs">Prerequisites</a></li>
+      <li><a href="/server-guide/prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud/LEMP-stacks">Nextcloud LEMP stacks</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config/spyderfly">SpyderFly</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+<article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: September 22nd, 2026</p>
+      <p>Last modified: September 23rd, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+
+  </body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SpyderFly Guide</title>
+
+    <style>
+      body {
+        background-color: white;
+        color: black;
+        font-family: Times New Roman;
+        margin-top: 1%;
+        padding: 20px;
+      }
+
+      img {
+        max-width: 15%;
+        height: auto;
+        margin-top: 20px;
+      }
+
+      code {
+        background-color: #f4f4f4;
+        color: #d63384;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 0.95em;
+      }
+
+      pre {
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+        padding: 12px;
+        border-radius: 6px;
+        overflow-x: auto;
+      }
+
+      pre code {
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <h1>SpyderFly Guide</h1>
+      <p>My goal with SpyderFly is to make an easier and more stable version of NGINX. I've had issues with it. My goals with this software is to make someone wanting to build a website focus on the website and not the site config. I had a lot of headaches with NGINX and it took me a while to get it figured out. One issue I've had with NGINX is that if one config is broken, none will load. There will be a testing command but it will still load the others if one fails. There will also be an auto config baked into the software. Hope to release it soon. I mean, the earliest build of UNIX was made in a week. No joke, look that up. I started the SpyderFly project September 12th, 2026 and just check when this site was last updated to know the time gap. Currently working on beta 2.0 as beta 1.0 was not working right and I decided to start over. I'll keep the beta 1.0 source code though.</p>
+    <h4><a href="https://spyderfly.sizablesplash.com/docs/">read the docs</a></h4>
+
+    <!--
+      <div class="newsletter-box">
+        <p>Or you could get email updates</p>
+        <form id="subForm">
+            <input type="email" id="subscriberEmail" placeholder="your@email.com" required>
+            <button type="submit">Subscribe</button>
+        </form>
+        <p id="subResponse" style="font-size: 0.9em; margin-top: 8px;"></p>
+    </div>
+
+    <script>
+    document.getElementById('subForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('subscriberEmail').value;
+        const responseBox = document.getElementById('subResponse');
+
+        try {
+            const response = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+
+            if (response.ok) {
+                responseBox.style.color = 'green';
+                responseBox.textContent = 'Successfully subscribed!';
+                document.getElementById('subForm').reset();
+            } else {
+                responseBox.style.color = 'red';
+                responseBox.textContent = 'Subscription failed. Try again later.';
+            }
+        } catch (err) {
+            responseBox.style.color = 'red';
+            responseBox.textContent = 'Network error occurred.';
+        }
+    });
+    </script>
+    -->
+
+    <h3>Quick Navigation</h3>
+      <li><a href="/server-guide/prereqs">Prerequisites</a></li>
+      <li><a href="/server-guide/prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud/LEMP-stacks">Nextcloud LEMP stacks</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config/spyderfly">SpyderFly</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+    <article  style="margin-top: 100px;">
+      <h2><a href="/">Back To Homepage</a></h2>
+    </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: September 14th, 2026</p>
+      <p>Last modified: September 15th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+  </body>
+</html>
+

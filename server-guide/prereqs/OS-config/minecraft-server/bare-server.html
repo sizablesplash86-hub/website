@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bare Server</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h1>Bare Server</h1>
+
+    <h2>Starters</h2>
+      <p>So, where should we create the server? Do it somewhere you'll remember. I recommend creating a folder here <code>mkdir -p /home/minecraft-servers && cd /home/minecraft-servers</code></p>
+
+    <h2>Java</h2>
+      <p>No matter what server hosting software you use, it all wraps around the <a href="https://www.minecraft.net/en-us/download/server">Java Dedicated Server (JDS) created by Microslop.</a> The jar file is everything a server needs to run, and all the third party software just wraps around it. From AMP to Playit.gg, everything uses the jar the same way. So, how do you do it? First, I assumed you installed Java from the previous page? No? Well, then run <code>sudo apt install default-jdk</code> Just be aware for different versions of Minecraft, different versions of Java will be needed. Now, create a folder with a name for your server. <code>mkdir example && cd example</code> for... example. Now, run <code>wget https://piston-data.mojang.com/v1/objects/33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c/server.jar</code> that will download the server.jar file. If the link ever fails, go back to the main page I sent earlier and copy the download link from there. The server jar file on the Mojang site is only the latest release. At the time of me writing this, that is 26.3. To search specific versions, you'll need a site like <a href="https://mcversions.net/">mcversions.net.</a> Just search the desired version and copy the download link and use the wget command. Run <code>ls</code> in your terminal to verify the jar downloaded. I've had issues with fabric we'll get into the modded section about. If it says something other than server.jar, keep note of its name. To start the minecraft server, run <code>java -Xmx4G -Xms4G -jar server.jar</code> and as I said, if it's something other than server.jar, just replace the command with the file name. the <code>-Xms2G -Xmx4G</code> are for ram allocation. It's in either Gib or GB, I do not remember. If you desire to change it, just put a different number. I just put <code>-Xmx1G -Xms10G</code> to give it enough memory. When you run the jar, it'll say "you need to agree to the EULA first." Now run <code>ls</code> and you should see a lot more files. For me, I see five aditional files; one of them being the EULA. Simply run <code>nano eula.txt</code> and change the "false" to "true". The EULA is essentially a terms and conditions for a server. When you save and exit, start the server again and it should run with no issues. If you stop the server by pressing ctrl+c and list the directory again, you'll see a world folder now too. As long as you keep that terminal open, the server will run and you will be able to connect. But what if you close that? You could use GNU Screen, but this way is much better. Run <code>nano /etc/systemd/system/EXAMPLE.service</code> Just replace the example part with your name of choosing. I recommend doing something like your server name followed by mc. Example: <code>example-mc.service</code> In there, paste this:<pre>
+[Unit]
+Description=Bare Metal Minecraft Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/minecraft-servers/EXAMPLE/
+ExecStart=java -Xms1G -Xmx10G -jar server.jar
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
+      </pre>Just replace the <code>-Xms1G -Xmx10G</code> with your desired memory allocation, the EXAMPLE to your folder name, the description to something different, and if you want and the jar name to whatever it's called if its different. Save, exit, and run <code>sudo systemctl daemon-reload && sudo systemctl enable example-mc.service && sudo systemctl start example-mc.service && sudo systemctl status example-mc.service</code> Just replace the example with your desired name. if it says "active" and/or "running", it worked. If not, something went wrong and I cannot help you. Best advice I have if it fails is to double check config. Your server is all ready to go now! All there is left to do is familiarize yourself with the server properties file and to join the server and have some fun with friends (assuming you did the port forwarding guide too. If not, that's next. <a href="/server-guide/prereqs/OS-config/HTTPS config/">Click here</a> to follow that).</p>
+
+      <h3>Modded Server</h3>
+        <p>A modded server is pretty much the exact same setup. Just search up on Google "fabric dedicated server" or whatever your desired mod loader is. I do fabric, so just <a href="https://fabricmc.net/use/server/">click here</a> to go to the download page. Fabric's jar file is weird though. If you click download, it'll download the jar file properly named and formatted. But if you do wget, it will download it as a binary simply called "jar". It'll still run, I'd just recommned renaming it <code>mv jar fabric.jar</code> To start the server, same command as the standard command I showed earlier, just with the fabric jar. It'll create a directory for mods where you put your mods. To do that, you can either use wget or SFTP. If you haven't setup SFTP, read the section in <a href="/server-guide/prereqs/OS-config/jellyfin/">Jellyfin</a> about it.</p>
+
+    <h2>Bedrock</h2>
+      <p>The Bedrock Dedicated Server (BDS) works a little differently compared to the JDS. The BDS is compiled in C++ which is a language that can run standalone on its own with no coding language needing to be installed to run it. Let's create a folder first. <code>mkdir -p /home/minecraft-servers/bedrock_example && cd /home/minecraft-servers/bedrock_example</code> Now, you need to download the zip. You can download it from the <a href="https://www.minecraft.net/en-us/download/server/bedrock">Bedrock Server Download</a> page or run <code>wget https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.26.51.1.zip -O server.zip && unzip server.zip && rm server.zip && ls</code> You should see all the needed folders and config. You will also see a how to html file. If you would like an easier way to read it, you can <a href="bedrock_server_how_to.html">here.</a> What's interesting about the BDS compared to the JDS is that the JDS works the same on Windows and Linux, while the BDS does not. As you saw on the downloads page, there's Windows support, and Ubuntu support and states that no other distros are supported. I think other distros will work, they just will not do support tickets for it. This works this way because of the coding languages. The JDS is programmed in Java while as I mentioned the BDS is coded in C++. C++ is a language that requires a lot more tweaking and is made to be a lot more specific. This makes it good for micro managing stuff like memory leaks, but makes it a pain when trying to port it to a different system. Take a look at Minecraft on Linux. Java is fully supported, Bedrock is not. Because Mojang has no interest in making a dedicated version of Bedrock for Linux because it would be a lot of work when most people don't use Linux. TL;DR C++ is not as portable of a language as Java. Stuff like Steam uses a compatibility layer for Linux gaming, so I have no clue why Mojang doesn't. Seriously, on the Minecraft Launcher for Linux, it states Dungeons and Legends are not available on Linux but work on Steam just fine. Anyway... that was a tangent, let's get back to it. To start the BDS, run the command <code>LD_LIBRARY_PATH=. ./bedrock_server</code> Now let's create the background process. Create the config like earlier <code>nano /etc/systemd/system/EXAMPLE.service</code> and paste this:<pre>
+[Unit]
+Description=Bare Metal Minecraft Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/minecraft-servers/EXAMPLE/
+ExecStart=LD_LIBRARY_PATH=. ./bedrock_server
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
+      </pre>Change the name to your directory, and edit the description if desired. Save and exit, run <code>sudo systemctl daemon-reload && sudo systemctl enable example-mc.service && sudo systemctl start example-mc.service && sudo systemctl status example-mc.service</code> Just replace the example with your desired name. Your bedrock server is now running in a backgroung process. I do wanna also mention that Bedrock server worlds are folders like Java's worlds. If you want to add a prexisting bedrock world, you just need to change it from a .mcworld to a .zip and extract it. If you ever want to get it back to a .mcworld file, put the folder back in your bedrock saves on your PC and open up the game. I've tried this before, sometimes the world didn't let me join, sometimes it did. If you can't join, just click export and you'll get the .mcworld file and then simply import it back into Minecraft.</p>
+
+    <h2>Other Info</h2>
+      <p>I might make my own Minecraft server manager now that I think of it... maybe, maybe no. Would be a fun challenge, probably easier than SpyderFly.</p>
+      <p>One thing I setup with a server I once used a python script that will take a backup each time someone leaves. It's right <a href="backup.py">here</a> if you would like to use it.</p>
+
+    <h3>Quick Navigation</h3>
+      <li><a href="/server-guide/prereqs">Prerequisites</a></li>
+      <li><a href="/server-guide/prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud/LEMP-stacks">Nextcloud LEMP stacks</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config/spyderfly">SpyderFly</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+<article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: September 25th, 2026</p>
+      <p>Last modified: September 25th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+
+  </body>
+</html>

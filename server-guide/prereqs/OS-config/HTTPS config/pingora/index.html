@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pingora explained</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h2>Pingora</h2>
+    <p>I mentioned my NGINX auto config to someone in a Discord server yesterday and they mentioned <a href="https://github.com/cloudflare/pingora">Pingora.</a> And since then, I can't stop thinking about it. As I mentioned in the previous part, it's developed by Cloudflare in the Rust programming language. <a href="https://github.com/cloudflare/pingora">Github for it btw.</a> However, it's pretty complicated. NGINX is putting a cube into a square hole compared to Pingora. I started working on learning it via Gemini (It's like an ex I keep going back to). But after Gemini kept complicating it, I went to github and read its docs. Made it make more sense. <a href="pingora-0.9.0.zip">Here is the source code for version 0.9</a> I am making no claim of ownership of this, please support the developers on GitHub. We're done with the intro, let's get into this. I also have the <a href="">quick-start.md</a> here if you'd like to read it.</p>
+    <p>Like I said in the part before, you have to compile it yourself. Cloudflare gives the code, you build the house. A bit like the <a href="/server-guide/prereqs/OS-config/nextcloud/LEMP-stacks/">Nextcloud LEMP stacks</a> if you read that section. So I will try and make this as concise as I can. To start, let's install some dependencies. Start by running <code>sudo apt update && sudo apt install build-essential clang perl libssl-dev pkg-config curl git cmake -y</code> followed by <code>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y</code> and finally <code>sudo apt install certbot -y</code> Next you'll need to create the cargo. I recommend doing /etc/pingora. However, you don't just create the directory, the cargo builds it for you. First, run <code>cd /etc</code> and then <code>cargo new pingora</code> followed by <code>cd pingora</code> Now you got the directory. If you run <code>ls</code> or see it via SFTP, you'll see two directories and two files. One should be named <code>Cargo.toml</code> We'll start with that. When you open it, you should see this: <pre>
+      [package]
+       name = "pingora"
+       version = "0.1.0"
+       edition = "2024"
+
+       [dependencies]
+    </pre>Right below dependencies, you'll want to add this:<pre>
+      I stopped here, might come back eventually
+    </pre></p>
+
+    <h3>Quick Navigation</h3>
+      <li><a href="prereqs">Prerequisites</a></li>
+      <li><a href="prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+<article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: September 11th, 2026</p>
+      <p>Last modified: September 11th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+
+  </body>
+</html>
+

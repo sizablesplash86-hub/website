@@ -1,5 +1,4 @@
 git add -f "downloads/stardust/Stardust Album.zip"
-git add -f "stardust/Stardust Album.zip"
 git add .gitignore
 
 # Commit the files

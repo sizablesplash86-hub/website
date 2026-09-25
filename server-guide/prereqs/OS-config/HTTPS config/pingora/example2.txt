@@ -1,0 +1,25 @@
+#[async_trait]
+impl ProxyHttp for LB {
+
+    /// For this small example, we don't need context storage
+    type CTX = ();
+    fn new_ctx(&self) -> () {
+        ()
+    }
+
+    async fn upstream_peer(&self, _session: &mut Session, _ctx: &mut ()) -> Result<Box<HttpPeer>> {
+        let upstream = self.0
+            .select(b"", 256) // hash doesn't matter for round robin
+            .unwrap();
+
+        println!("upstream peer is: {upstream:?}");
+
+        // `HttpPeer::new(address, tls, sni)`:
+        // - `true` enables TLS, because the 1.1.1.1 demo backends are served over HTTPS.
+        //   Use `false` for a plain-HTTP upstream (e.g. a local server).
+        // - the SNI `one.one.one.one` must match the upstream's TLS certificate.
+        //   When TLS is disabled the SNI is unused, so pass an empty string instead.
+        let peer = Box::new(HttpPeer::new(upstream, true, "one.one.one.one".to_string()));
+        Ok(peer)
+    }
+}
