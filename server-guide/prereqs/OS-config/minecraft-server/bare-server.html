@@ -82,10 +82,10 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/home/minecraft-servers/EXAMPLE/
-ExecStart=LD_LIBRARY_PATH=. ./bedrock_server
+WorkingDirectory=/home/server/bedrock
+Environment="LD_LIBRARY_PATH=/home/server/bedrock"
+ExecStart=/home/server/bedrock/bedrock_server
 Restart=always
-RestartSec=15
 
 [Install]
 WantedBy=multi-user.target

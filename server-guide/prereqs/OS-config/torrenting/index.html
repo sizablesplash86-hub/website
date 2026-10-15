@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Torrenting</title>
+
+<style>
+  body {
+    background-color: white;
+    color: black;
+    font-family: Times New Roman;
+    margin-top: 1%;
+    padding: 20px;
+  }
+
+  img {
+    max-width: 15%;
+    height: auto;
+    margin-top: 20px;
+  }
+
+  code {
+    background-color: #f4f4f4;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.95em;
+  }
+
+  pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+  }
+
+</style>
+
+</head>
+
+<body>
+
+  <h1>Torrenting</h1>
+    <p>Torrenting is most often associated with negative connitations that would fit you more if you had a peg leg and an eye patch. But it is legal, as long as you aren't using it for sailing. You should NEVER DO THAT BECAUSE PIRACY IS WRONG ;)</p>
+    <p>So what is Torrenting? Imagine you got one man who is really good at making bread. Known for making the best bread in the city. He's efficient and can make bread well. But, he's only one guy. If he gets sick or something, no one can make the bread. A factory has less skilled but more workers making the bread faster and cheaper. The many machines in the factory means less errors and quality issues. But, if there aren't enough workers, the single baker is quicker. That is torrenting vs downloading. The baker is the downloading way, while torrenting is the factory way. Instead of factory workers, torrenting has seeders. People who have a copy of the thing you are torrenting and allow others to download from it. Downloading is from one server at a time, torrenting is downloading from multiple servers at the same time. The more seeders, the faster the download. But less seeders, and a download (or traditional baker) would be faster. Most sites with a torrent will list seeders so you can see. But there have been times for me where a download has been faster than a torrent. It all depends on how popular something is to torrent. One torrent I did a while ago took like four days for 40GB. It wasn't stalled, it was just that slow. Also could have a reason to do with Tailscale causing issues. I'll get into that later.</p>
+    <p>You can do torrenting on your server or your PC. This guide will work for both, but it is intended for the server side. I will be setting up the server side for the first time as I've always done it on my PC or laptop.</p>
+
+  <h2>Qbittorrent</h2>
+    <p>Qbittorrent is what I personally use. If you're following this guide for a PC, download and run the EXE from the <a href="https://www.qbittorrent.org/download">QBittorrent downloads page.</a> If you're following this guide for a Linux desktop use, why? You probably already know everything in this guide anyways. Anway, to install QBittorrent for our Debian server, simply run <code>sudo apt install qbittorrent-nox</code> One thing I honestly really hate about this is that it doesn't come with a daemon system. It would be so easy to add to the install, why didn't cha do it, people who make qbittorrent-nox? One way you can use QBittorrent is via running <code>qbittorrent-nox</code> in your terminal. That'll allow you to access it in your browser. But that's inconvienient and my way is better. If you followed my <a href="https://sizablesplash.com/server-guide/prereqs/OS-config/minecraft-server/bare-server.html">JDS & BDS guide</a>, you would know a bit about the daemon system. However, I didn't mention it by name, but that's what it's called. When you install something like AMP by CubeCoders for example, it creates a daemon system. It's the background service the operating system uses. Anyway, let's create one for QBittorrent.</p>
+    <p>To create the daemon system, first you need to create the file. The daemon system works with files in the directory <code>/etc/systemd/system/</code> so that's where we're gonna create it. There are other daemon system locations, NGINX for example uses <code>/usr/lib/systemd/system/</code> but I've always done it this way. Run <code>nano /etc/systemd/system/qbittorrent.service</code> and paste the following:<pre>
+[Unit]
+Description=qBittorrent-nox Background Daemon
+After=network.target
+
+[Service]
+Type=forking
+User=root
+ExecStart=/usr/bin/qbittorrent-nox -d --webui-port=8466
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+    </pre>One thing you should know about the <code>--webui-port=8466</code> part. That's just a random number I came up with. By default, qbittorrent-nox uses port 8080. I really hate that. Thousands of number combos you can do, why does so much software keep using 8080? I do creative ports for each of my projects. I've installed three things that all use 8080 and have learned how to rebind them: AMP, code server, and now this. Once you paste the service into your nano window, ctrl+o enter to write out, and ctrl+x to exit. Run the following command: <code>sudo systemctl daemon-reload && sudo systemctl enable qbittorrent && sudo systemctl start qbittorrent && sudo systemctl status qbittorrent</code> Makes it you don't have to do them all as individual commands. Now, run <code>sudo systemctl stop qbittorrent</code> to stop the service. We need a few things now. In your terminal, run <code>qbittorrent-nox</code> You will see a legal notice. Press enter to continue. It'll give you a temporary password. Make sure to write that down or take a screenshot. Enter in your browser your server's LAN IP followed by 8466. Paste your password followed by admin for the user. Go to the top left and click the settings button. You should see a window pop up. Go to the tab "WebUI" and go to "authentication". Change them to the user and password of your choosing, and scroll down and click "save". Now you are free to torrent.</p>
+    <p>Once you are setup, here's how to torrent. I'll use the <a href="https://cdimage.debian.org/debian-cd/current/amd64/bt-cd/">Debian ISO</a> for an example. Right click the torrent link you want and copy it. Go back to QBittorrent and click the link icon in the top left corner. You'll see a text box that says "add torrent links". Paste yours in there and select your torrent download location. For me, I'll just do the downloads folder. Scroll down and click "download". You will then see that torrent appear in the box. You'll see the percentage and see it go. From the time I started typing the part about clicking the button to now, it's already done. Literally took less than a minute. Like I said earlier, not all torrents will download that fast and it depends on the seeders and file size. By default, QBittorrent will use you as a seeder. If you desire to not be a seeder, just click on the torrent and then click the orange square in the top left. Have fun torrenting!</p>
+
+  <h2>VPN</h2>
+    <p>Not saying you should, but if you are going to torrent with pirated content, a VPN is recommended. Picture me as that one doctor who would go on dark web sites and give people buying illegal substances advice. I recommended <a href="https://protonvpn.com/">Proton VPN</a>. Open source, based on WireGuard (just like <a href="https://sizablesplash.com/server-guide/prereqs/OS-config/tailscale">Tailscale</a>), great for torrenting, and cheap. Like $10 a month, but I just got a year up front and called it a day. I mentioned Tailscale as a conflict earlier. This guide goes over Tailscale and so I presume you have it installed and configured. I'm not sure how it is on Linux, but iPhone, when you connect to ProtonVPN or another VPN, it'll automatically disconnect Tailscale. However, on Windows, it will attempt to do both and cause a DNS issue. If you're following this on Windows, just open task manager and kill Tailscale each time you're going to use Proton. Took me forever to realize that was the reason why I was having issues with Proton. Let's install <a href="https://protonvpn.com/support/use-linux-cli">ProtonVPN CLI.</a> Get ready:<pre>
+# you will most likely already have this directory, but create it if not
+sudo mkdir -p /usr/share/keyrings
+# downloading the keyring
+wget -O- https://repo.protonvpn.com/debian/public_key.asc | gpg --dearmor | sudo tee /usr/share/keyrings/protonvpn-stable-archive-keyring.gpg > /dev/null
+    </pre>Then then paste this in your terminal to create the actual repository file:<pre>
+sudo tee /etc/apt/sources.list.d/protonvpn-stable-release.sources &lt;&lt;EOF
+Types: deb
+URIs: https://repo.protonvpn.com/debian
+Suites: stable
+Components: main
+Signed-By: /usr/share/keyrings/protonvpn-stable-archive-keyring.gpg
+EOF
+    </pre>and finally <code>sudo apt update && sudo apt install proton-vpn-cli -y</code> Took a lot, huh? We ain't done. Run in your terminal <code>protonvpn signin [username]</code> but replace the bracket username with yours. Mine was just the email I used minus the domain part so yours should be the same. It'll ask you for your password and then you're in. I got a login email when I did. Now before doing anything else, make sure you have contingencies. My server is an hour and a half one way from me, I need some backup plan if something goes wrong. If you're not home right now, wait till you get home and connecting to your terminal via Tailscale, wait till you get home. I have contingencies. My server is a Proxmox host with the main Debian VM with everything on it. I have subnet routing enabled on both the host and VM. Because having more than one subnet enabled can cause issues, I have the host disabled for that. So if you have another machine running at your household with subnets enabled, run <code>sudo systemctl stop tailscaled</code> and reconnect on your LAN IP. If not, wait. If you haven't setup subnet routing and would like to, I show how in my <a href="https://sizablesplash.com/server-guide/prereqs/OS-config/tailscale">Tailscale guide.</a> To connect to the fastest location, simply run in your terminal <code>protonvpn connect</code> Next, go back to your QBittorrent tab and go back to settings. Go to "advanced", and change "network interface" from "any interface" to "proton0". Scroll down and click save. Run <code>protonvpn config set port-forwarding on</code> Then <code>protonvpn config list</code> Install <code>sudo apt install natpmpc -y</code> and then run <code>while true ; do date ; natpmpc -a 1 0 udp 60 -g 10.2.0.1 && natpmpc -a 1 0 tcp 60 -g 10.2.0.1 || { echo -e "ERROR with natpmpc command \a" ; break ; } ; sleep 45 ; done</code> Look for the line that says "Mapped public port *" and copy that. Go back to QBittorrent and open settings. Go to "connection" and put your port in the listening port box. Test it out by doing a torrent. If it works, you're good to go and have fun LEGALLY ;) and safely torrenting. I might update this to add a section on the Wireguard Proton stuff. This is my first time torrenting directly to a server so this is new. Notes: talk about split tunneling so I can run Tailscale & Proton at the same time.</p>
+
+    <h3>Quick Navigation</h3>
+      <li><a href="/server-guide/prereqs">Prerequisites</a></li>
+      <li><a href="/server-guide/prereqs/OS-config">Configuring the OS</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/minecraft-server">Minecraft Server</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/jellyfin">Jellyfin</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/nextcloud">Nextcloud</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/tailscale">Tailscale</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/port forwarding">Port Forwarding</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/HTTPS config">HTTPS Configuration</a></li>
+      <li><a href="/server-guide/prereqs/OS-config/other-tools">Recommended Tools</a></li>
+
+<article  style="margin-top: 100px;">
+    <h2><a href="/">Back To Homepage</a></h2>
+  </article>
+
+    <article style="margin-top: 75px;">
+      <h3>Other info</h3>
+    </article>
+      <p>Any issues with this guide, shoot me an email "t.d.bergstrom@sizablesplash.com"</p>
+      <p>Date created: August 14th, 2026</p>
+      <p>Last modified: August 14th, 2026</p>
+    <article style="margin-top: 75px; margin-bottom: 150px;">
+      <p><a href="index.html" style="color: #000000; background-color: #FFFFFF; padding: 2px 6px; border-radius: 2px; text-decoration: none; border: 1px solid #6c757d;" download>this site is open source</a></p>
+    </article>
+
+  </body>
+</html>
+
